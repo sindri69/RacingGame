@@ -83,9 +83,6 @@ class ModelMatrix:
                         0, 0, 0, 1]
         self.add_transformation(other_matrix)
     
-
-    # YOU CAN TRY TO MAKE PUSH AND POP (AND COPY) LESS DEPENDANT ON GARBAGE COLLECTION
-    # THAT CAN FIX SMOOTHNESS ISSUES ON SOME COMPUTERS
     def push_matrix(self):
         self.stack.append(self.copy_matrix())
 
@@ -117,8 +114,7 @@ class ViewMatrix:
         self.v = Vector(0, 1, 0)
         self.n = Vector(0, 0, 1)
 
-    # # MAKE OPERATIONS TO ADD LOOK, SLIDE, PITCH, YAW and ROLL ##
-    # ---
+
     def look(self, eye, center, up):
         self.eye = eye
         self.n = (eye - center)
@@ -171,8 +167,6 @@ class ProjectionMatrix:
 
         self.is_orthographic = True
 
-    ## MAKE OPERATION TO SET PERSPECTIVE PROJECTION (don't forget to set is_orthographic to False) ##
-    # ---
     def set_perspective(self, fov, aspect, near, far):
         self.near = near
         self.far = far
@@ -218,48 +212,3 @@ class ProjectionMatrix:
                     0,C,D,0,
                     0,0,E,F,
                     0,0,-1,0]
-# IDEAS FOR OPERATIONS AND TESTING:
-# if __name__ == "__main__":
-#     matrix = ModelMatrix()
-#     matrix.push_matrix()
-#     print(matrix)
-#     matrix.add_translation(3, 1, 2)
-#     matrix.push_matrix()
-#     print(matrix)
-#     matrix.add_scale(2, 3, 4)
-#     print(matrix)
-#     matrix.pop_matrix()
-#     print(matrix)
-    
-#     matrix.add_translation(5, 5, 5)
-#     matrix.push_matrix()
-#     print(matrix)
-#     matrix.add_scale(3, 2, 3)
-#     print(matrix)
-#     matrix.pop_matrix()
-#     print(matrix)
-    
-#     matrix.pop_matrix()
-#     print(matrix)
-        
-#     matrix.push_matrix()
-#     matrix.add_scale(2, 2, 2)
-#     print(matrix)
-#     matrix.push_matrix()
-#     matrix.add_translation(3, 3, 3)
-#     print(matrix)
-#     matrix.push_matrix()
-#     matrix.add_rotation_y(pi / 3)
-#     print(matrix)
-#     matrix.push_matrix()
-#     matrix.add_translation(1, 1, 1)
-#     print(matrix)
-#     matrix.pop_matrix()
-#     print(matrix)
-#     matrix.pop_matrix()
-#     print(matrix)
-#     matrix.pop_matrix()
-#     print(matrix)
-#     matrix.pop_matrix()
-#     print(matrix)
-    

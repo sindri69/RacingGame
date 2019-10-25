@@ -1,4 +1,3 @@
-
 from OpenGL.GL import *
 from math import * # trigonometry
 
@@ -36,14 +35,12 @@ class Shader3D:
 
         self.normalLoc = glGetAttribLocation(self.renderingProgramID, "a_normal")
         glEnableVertexAttribArray(self.normalLoc)
-        ## ADD CODE HERE ##
+       
 
         self.modelMatrixLoc			= glGetUniformLocation(self.renderingProgramID, "u_model_matrix")
         self.viewMatrixLoc = glGetUniformLocation(self.renderingProgramID, "u_view_matrix")
         self.projectionMatrixLoc = glGetUniformLocation(self.renderingProgramID, "u_projection_matrix")
         
-        ##original light
-        #self.colorLoc = glGetUniformLocation(self.renderingProgramID, "u_color")
         self.eyePosLoc = glGetUniformLocation(self.renderingProgramID, "u_eye_position")
         self.lightPosLoc = glGetUniformLocation(self.renderingProgramID, "u_light_position")
         self.lightDiffuseLoc = glGetUniformLocation(self.renderingProgramID, "u_light_diffuse")
@@ -102,27 +99,27 @@ class Shader3D:
     def set_material_shininess(self, shininess):
         glUniform1i(self.materialShininessLoc, shininess)
 
-    def set_light1_position(self, pos):
-          glUniform4f(self.light1PosLoc, pos.x, pos.y, pos.z, 1.0)
-    def set_light1_direction(self, pos):
-          glUniform4f(self.light1DirLoc, pos.x, pos.y, pos.z, 1.0)
-    def set_light1_diffuse(self, red, green, blue):
-        glUniform4f(self.light1DiffuseLoc, red, green, blue, 1.0)
-    def set_light1_specular(self, red, green, blue):
-        glUniform4f(self.light1SpecLoc, red, green, blue, 1.0)
-    def set_light1_ambiance(self, red, green, blue):
-        glUniform4f(self.light1AmbianceLoc, red, green, blue, 1.0)
+    # def set_light1_position(self, pos):
+    #       glUniform4f(self.light1PosLoc, pos.x, pos.y, pos.z, 1.0)
+    # def set_light1_direction(self, pos):
+    #       glUniform4f(self.light1DirLoc, pos.x, pos.y, pos.z, 1.0)
+    # def set_light1_diffuse(self, red, green, blue):
+    #     glUniform4f(self.light1DiffuseLoc, red, green, blue, 1.0)
+    # def set_light1_specular(self, red, green, blue):
+    #     glUniform4f(self.light1SpecLoc, red, green, blue, 1.0)
+    # def set_light1_ambiance(self, red, green, blue):
+    #     glUniform4f(self.light1AmbianceLoc, red, green, blue, 1.0)
 
-    def set_light2_position(self, pos):
-          glUniform4f(self.light2PosLoc, pos.x, pos.y, pos.z, 1.0)
-    def set_light2_direction(self, pos):
-          glUniform4f(self.light2DirLoc, pos.x, pos.y, pos.z, 1.0)
-    def set_light2_diffuse(self, red, green, blue):
-        glUniform4f(self.light2DiffuseLoc, red, green, blue, 1.0)
-    def set_light2_specular(self, red, green, blue):
-        glUniform4f(self.light2SpecLoc, red, green, blue, 1.0)
-    def set_light2_ambiance(self, red, green, blue):
-        glUniform4f(self.light2AmbianceLoc, red, green, blue, 1.0)
+    # def set_light2_position(self, pos):
+    #       glUniform4f(self.light2PosLoc, pos.x, pos.y, pos.z, 1.0)
+    # def set_light2_direction(self, pos):
+    #       glUniform4f(self.light2DirLoc, pos.x, pos.y, pos.z, 1.0)
+    # def set_light2_diffuse(self, red, green, blue):
+    #     glUniform4f(self.light2DiffuseLoc, red, green, blue, 1.0)
+    # def set_light2_specular(self, red, green, blue):
+    #     glUniform4f(self.light2SpecLoc, red, green, blue, 1.0)
+    # def set_light2_ambiance(self, red, green, blue):
+    #     glUniform4f(self.light2AmbianceLoc, red, green, blue, 1.0)
 
     def set_position_attribute(self, vertex_array):
         glVertexAttribPointer(self.positionLoc, 3, GL_FLOAT, False, 0, vertex_array)
