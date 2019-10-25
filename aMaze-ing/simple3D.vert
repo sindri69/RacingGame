@@ -25,15 +25,14 @@ uniform vec4 u_light2_diffuse;
 uniform vec4 u_light2_specular;
 uniform vec4 u_light2_ambiance;
 
-const int numberOfLights = 3;
 
 varying vec4 v_color;  //Leave the varying variables alone to begin with
-varying vec4 v_color1;
-varying vec4 v_color2;
+
 
 void main(void)
 {
-
+	vec4 position = vec4(a_position.x, a_position.y, a_position.z, 1.0);
+	vec4 normal = vec4(a_normal.x, a_normal.y, a_normal.z, 0.0);
 
 	position = u_model_matrix * position;
 	normal = normalize(u_model_matrix * normal);
@@ -59,7 +58,6 @@ void main(void)
 						+ (u_light1_ambiance + u_light1_diffuse * u_material_diffuse * lambert1 + u_light1_specular * u_material_specular * pow(phong1, u_material_shininess))
 						+ (u_light2_ambiance + u_light2_diffuse * u_material_diffuse * lambert2 + u_light2_specular * u_material_specular * pow(phong2, u_material_shininess));
 
-	position = u_view_matrix * position;
-	position = u_projection_matrix * position;
+	position = u_projection_matrix * (u_view_matrix * position);
 	gl_Position = position;
 }
