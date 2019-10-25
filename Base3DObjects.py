@@ -38,6 +38,9 @@ class Vector:
     
     def __len__(self):
         return sqrt(self.x * self.x + self.y * self.y + self.z * self.z)
+
+    def rotate(self, angle):
+        return Vector((cos(angle) * self.x + sin(angle) * self.z), self.y, (-1 * sin(angle) * self.x + self.z * cos(angle)))
     
     def normalize(self):
         length = self.__len__()

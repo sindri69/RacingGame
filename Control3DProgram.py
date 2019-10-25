@@ -10,12 +10,13 @@ import time
 
 from Shaders import *
 from Matrices import *
+from Car import *
 
 
 class GraphicsProgram3D:
     def __init__(self):
 
-        pygame.init() 
+        pygame.init()
         pygame.display.set_mode((800,600), pygame.OPENGL|pygame.DOUBLEBUF)
 
         self.shader = Shader3D()
@@ -24,7 +25,7 @@ class GraphicsProgram3D:
         self.model_matrix = ModelMatrix()
 
         self.view_matrix = ViewMatrix()
-        self.view_matrix.look(Point(0, 1, 0), Point(0, 1, 1), Vector(0, 1, 0))
+        self.view_matrix.look(Point(1, 3, -4), Point(0, 3, 1), Vector(0, 1, 0))
         self.projection_matrix = ProjectionMatrix()
         self.projection_matrix.set_perspective(pi/2, 4/3, 0.3, 30)
         self.shader.set_projection_matrix(self.projection_matrix.get_matrix())
@@ -37,21 +38,24 @@ class GraphicsProgram3D:
 
         self.angle = 0
 
-        self.w_key_down = False  
-        self.s_key_down = False  
-        self.a_key_down = False  
+        self.w_key_down = False
+        self.s_key_down = False
+        self.a_key_down = False
         self.d_key_down = False
+        self.LSHIFT_key_down = False
 
         self.shader.set_light_position(Point(10.0, 10.0, 10.0))
-        self.shader.set_light_diffuse(0.8, 0.3, 0.4)
+        self.shader.set_light_diffuse(1.0, 1.0, 1.0)
         self.shader.set_light_specular(0.8, 0.3, 0.4)
         self.shader.set_light_ambiance(0.1, 0.1, 0.1)
+
+        self.car = Car(1.0,1.0,1.0)
 
         self.white_background = False
 
     def update(self):
         delta_time = self.clock.tick() / 1000.0
-        
+
         self.playerMove(delta_time)
 
     # def ballCollision(self):
@@ -62,18 +66,47 @@ class GraphicsProgram3D:
     #         self.sphereMatG = random.uniform(0,1)
     #         self.sphereMatR = random.uniform(0,1)
 
+    def carMove(self, delta_time):
+        if self.w_key_down:
+            if self.car.velocity.x < 0:
+                self.car.acceleration = self.car.brake_deceleration
+            else:
+                self.car.acceleration += 1 * delta_time
+        elif self.s_key_down:
+            if self.car.velocity.x > 0:
+                self.car.acceleration = -self.car.brake_deceleration
+            else:
+                self.car.acceleration -= 1 * delta_time
+        elif self.LSHIFT_key_down:
+            if self.car.velocity.x != 0:
+                self.car.acceleration = copysign(self.car.max_acceleration, -self.car.velocity.x)
 
-    def playerMove(self, delta_time):
+        else:
+            self.car.acceleration = 0
+        self.car.acceleration = max(-self.car.max_acceleration, min(self.car.acceleration, self.car.max_acceleration))
 
-        if self.w_key_down: 
-            self.view_matrix.slide(0, 0, -2 * delta_time)
-        if self.s_key_down:
-            self.view_matrix.slide(0, 0, 1 * delta_time)
-        if self.a_key_down:
-            self.view_matrix.pitch(-pi * delta_time)
         if self.d_key_down:
-            self.view_matrix.pitch(pi * delta_time)
-        
+            self.car.steering -= pi / 6 * delta_time
+        elif self.a_key_down:
+            self.car.steering += pi / 6 * delta_time
+        else:
+            self.car.steering = 0
+            self.car.steering = max(-self.car.max_steering, min(self.car.steering, self.car.max_steering))
+
+
+    # def playerMove(self, delta_time):
+
+
+
+        # if self.w_key_down:
+        #     self.view_matrix.slide(0, 0, -2 * delta_time)
+        # if self.s_key_down:
+        #     self.view_matrix.slide(0, 0, 1 * delta_time)
+        # if self.a_key_down:
+        #     self.view_matrix.pitch(-pi * delta_time)
+        # if self.d_key_down:
+        #     self.view_matrix.pitch(pi * delta_time)
+
 
     def display(self):
         glEnable(GL_DEPTH_TEST)  ### --- NEED THIS FOR NORMAL 3D BUT MANY EFFECTS BETTER WITH glDisable(GL_DEPTH_TEST) ... try it! --- ###
@@ -105,18 +138,29 @@ class GraphicsProgram3D:
         # self.shader.set_light2_specular(0.6, 0.3, 0.4)
         # self.shader.set_light2_ambiance(0.1, 0.0, 0.0)
 
+        #cube for now, will be a car later
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_translation(1.0, 1.0, 1.0)
+        self.model_matrix.add_scale(2.0, 1.5, 4.0)
+        self.shader.set_model_matrix(self.model_matrix.matrix)
+        self.shader.set_material_diffuse(0.3,0.3,0.3)
+        self.shader.set_material_shininess(2)
+        self.cube.set_vertices(self.shader)
+        self.cube.draw(self.shader)
+        self.model_matrix.pop_matrix()
+
 
         #floor
         self.model_matrix.push_matrix()
-        self.model_matrix.add_translation(8.0, -0.2, 8.0)  
-        self.model_matrix.add_scale(32.0, 0.4, 32.0)  
+        self.model_matrix.add_translation(8.0, -0.2, 8.0)
+        self.model_matrix.add_scale(32.0, 0.4, 32.0)
         self.shader.set_model_matrix(self.model_matrix.matrix)
         self.shader.set_material_diffuse(0.9,0.9,0.9)
         self.shader.set_material_shininess(2)
         self.cube.set_vertices(self.shader)
         self.cube.draw(self.shader)
         self.model_matrix.pop_matrix()
-        
+
         pygame.display.flip()
 
 
@@ -141,6 +185,8 @@ class GraphicsProgram3D:
                         self.a_key_down = True
                     elif event.key == K_d:
                         self.d_key_down = True
+                    elif event.key == K_LSHIFT:
+                        self.LSHIFT_key_down = True
                 elif event.type == pygame.KEYUP:
 
                     if event.key == K_w:
@@ -151,14 +197,16 @@ class GraphicsProgram3D:
                         self.a_key_down = False
                     elif event.key == K_d:
                         self.d_key_down = False
-            
+                    elif event.key == K_LSHIFT:
+                        self.LSHIFT_key_down = False
+
             self.update()
             self.display()
 
         #OUT OF GAME LOOP
         pygame.quit()
-   
-    
+
+
     # def drawSphere(self):
     #     self.sphere.set_vertices(self.shader)
     #     self.model_matrix.push_matrix()
