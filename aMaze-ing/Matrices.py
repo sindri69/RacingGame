@@ -42,8 +42,47 @@ class ModelMatrix:
                         0, 0, 0, 1]
         self.add_transformation(other_matrix)
 
-    ## MAKE OPERATIONS TO ADD TRANLATIONS, SCALES AND ROTATIONS ##
-    # ---
+    def add_rotateX(self, angle):
+        c = cos(angle)
+        s = sin(angle)
+        other_matrix = [1, 0, 0, 0,
+                        0, c, -s, 0,
+                        0, s, c, 0,
+                        0, 0, 0, 1]
+        self.add_transformation(other_matrix)
+
+    def add_rotateY(self, angle):
+        c = cos(angle)
+        s = sin(angle)
+        other_matrix = [c, 0, s, 0,
+                        0, 1, 0, 0,
+                        -s, 0, c, 0,
+                        0, 0, 0, 1]
+        self.add_transformation(other_matrix)
+
+    def add_rotateZ(self, angle):
+        c = cos(angle)
+        s = sin(angle)
+        other_matrix = [c, -s, 0, 0,
+                        s, c, 0, 0,
+                        0, s, c, 0,
+                        0, 0, 0, 1]
+        self.add_transformation(other_matrix)
+
+    def add_translation(self, x, y, z):
+        other_matrix = [1, 0, 0, x,
+                        0, 1, 0, y,
+                        0, 0, 1, z,
+                        0, 0, 0, 1]
+        self.add_transformation(other_matrix)
+
+    def add_scale(self, sX, sY, sZ):
+        other_matrix = [sX, 0, 0, 0,
+                        0, sY, 0, 0,
+                        0, 0, sZ, 0,
+                        0, 0, 0, 1]
+        self.add_transformation(other_matrix)
+    
 
     # YOU CAN TRY TO MAKE PUSH AND POP (AND COPY) LESS DEPENDANT ON GARBAGE COLLECTION
     # THAT CAN FIX SMOOTHNESS ISSUES ON SOME COMPUTERS
@@ -78,8 +117,37 @@ class ViewMatrix:
         self.v = Vector(0, 1, 0)
         self.n = Vector(0, 0, 1)
 
-    ## MAKE OPERATIONS TO ADD LOOK, SLIDE, PITCH, YAW and ROLL ##
+    # # MAKE OPERATIONS TO ADD LOOK, SLIDE, PITCH, YAW and ROLL ##
     # ---
+    def look(self, eye, center, up):
+        self.eye = eye
+        self.n = (eye - center)
+        self.n.normalize()
+        self.u = up.cross(self.n)
+        self.u.normalize()
+        self.v = self.n.cross(self.u)
+
+
+    def slide(self, deltaU, deltaV, deltaN):
+        self.eye += self.u * deltaU + self.v * deltaV + self.n * deltaN
+
+    def roll(self, angle):
+        newU = self.u * cos(angle) + self.v * sin(angle)
+        newV = self.u * -sin(angle) + self.v * cos(angle)
+        self.u = newU
+        self.v = newV
+
+    def pitch(self, angle):
+        newU = self.u * cos(angle) + self.n * sin(angle)
+        newN = self.u * -sin(angle) + self.n * cos(angle)
+        self.u = newU
+        self.n = newN
+        
+    def yaw(self, angle):
+        newV = self.v * cos(angle) + self.n * sin(angle)
+        newN = self.v * -sin(angle) + self.n * cos(angle)
+        self.v = newV
+        self.n = newN
 
     def get_matrix(self):
         minusEye = Vector(-self.eye.x, -self.eye.y, -self.eye.z)
@@ -105,6 +173,15 @@ class ProjectionMatrix:
 
     ## MAKE OPERATION TO SET PERSPECTIVE PROJECTION (don't forget to set is_orthographic to False) ##
     # ---
+    def set_perspective(self, fov, aspect, near, far):
+        self.near = near
+        self.far = far
+        self.top = near * tan(fov / 2)
+        self.bottom = -self.top
+        self.right = self.top * aspect
+        self.left = -self.right
+        self.fov = fov
+        self.is_orthographic = False        
 
     def set_orthographic(self, left, right, bottom, top, near, far):
         self.left = left
@@ -130,30 +207,17 @@ class ProjectionMatrix:
                     0,0,0,1]
 
         else:
-            pass
-            # Set up a matrix for a Perspective projection
-            ###  Remember that it's a non-linear transformation   ###
-            ###  so the bottom row is different                   ###
+            A = ( 2 * self.near) / (self.right - self.left)
+            B = ( self.right + self.left) / (self.right - self.left)
+            C = ( 2 * self.near) / (self.top - self.bottom)
+            D = ( self.top + self.bottom) / (self.top - self.bottom)
+            E = -( self.far + self.near) / (self.far - self.near)
+            F = -( 2 * self.near * self.far) / (self.far - self.near)
 
-
-
-# The ProjectionViewMatrix returns a hardcoded matrix
-# that is just used to get something to send to the
-# shader before you properly implement the ViewMatrix
-# and ProjectionMatrix classes.
-# Feel free to throw it away afterwards!
-
-class ProjectionViewMatrix:
-    def __init__(self):
-        pass
-
-    def get_matrix(self):
-        return [ 0.45052942369783683,  0.0,  -0.15017647456594563,  0.0,
-                -0.10435451285616304,  0.5217725642808152,  -0.3130635385684891,  0.0,
-                -0.2953940042189954,  -0.5907880084379908,  -0.8861820126569863,  3.082884480118567,
-                -0.2672612419124244,  -0.5345224838248488,  -0.8017837257372732,  3.7416573867739413 ]
-
-
+            return [A,0,B,0,
+                    0,C,D,0,
+                    0,0,E,F,
+                    0,0,-1,0]
 # IDEAS FOR OPERATIONS AND TESTING:
 # if __name__ == "__main__":
 #     matrix = ModelMatrix()
