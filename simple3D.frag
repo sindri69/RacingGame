@@ -1,7 +1,21 @@
+varying vec4 norm;
+varying vec4 s;
+varying vec4 h;
 
-varying vec4 v_color;
+uniform vec4 u_light_ambiance;
+uniform vec4 u_light_diffuse;
+uniform vec4 u_light_specular;
+
+uniform vec4 u_material_ambiance;
+uniform vec4 u_material_diffuse;
+uniform vec4 u_material_specular;
+uniform int u_material_shininess;
+
 
 void main(void)
 {
-    gl_FragColor = v_color;
+    float lambert = max(dot(norm, s), 0);
+    float phong = max(dot(norm, h), 0);
+
+    gl_FragColor = u_light_ambiance + u_light_diffuse * u_material_diffuse * lambert + u_light_specular * u_material_specular * pow(phong, u_material_shininess);
 }
