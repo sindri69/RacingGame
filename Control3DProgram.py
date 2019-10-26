@@ -35,6 +35,8 @@ class GraphicsProgram3D:
         self.cube.set_vertices(self.shader)
 
         self.tree = load_obj_file(sys.path[0] + "/models" , "birch_tree.obj")
+        self.grass = load_obj_file(sys.path[0] + "/models" , "Grass.obj")
+        self.test = load_obj_file(sys.path[0] + "/models" , "test2.obj")
 
         self.clock = pygame.time.Clock()
         self.clock.tick()
@@ -47,10 +49,10 @@ class GraphicsProgram3D:
         self.d_key_down = False
         self.LSHIFT_key_down = False
 
-        self.shader.set_light_position(Point(10.0, 10.0, 10.0))
-        self.shader.set_light_diffuse(0.1, 0.9, 0.1)
+        self.shader.set_light_position(Point(5.0, 5.0, 5.0))
+        self.shader.set_light_diffuse(1.0, 1.0, 1.0)
         self.shader.set_light_specular(0.9, 0.1, 0.1)
-        self.shader.set_light_ambiance(0.0, 0.0, 0.0)
+        self.shader.set_light_ambiance(0.1, 0.1, 0.1)
 
         self.car = Car(1.0,1.0,1.0)
 
@@ -84,6 +86,30 @@ class GraphicsProgram3D:
         self.tree.draw(self.shader)
         self.model_matrix.pop_matrix()
 
+    def drawGrass(self):
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_scale(3.0, 0.4, 3.0)
+        self.shader.set_model_matrix(self.model_matrix.matrix)
+        self.grass.draw(self.shader)
+        self.model_matrix.pop_matrix()
+
+    
+    def drawtest(self):
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_scale(0.5, 0.5, 0.5)
+        self.model_matrix.add_translation(10, 1.0, 1.0)
+        self.shader.set_model_matrix(self.model_matrix.matrix)
+        self.test.draw(self.shader)
+        self.model_matrix.pop_matrix() 
+
+    def drawForrest(self, howmanytrees):
+        for x in range (1, howmanytrees):
+            self.model_matrix.push_matrix()
+            self.model_matrix.add_translation(1.0 * x, 1.0, 1.0 * x)
+            self.model_matrix.add_scale(2.0, 1.5, 4.0)
+            self.shader.set_model_matrix(self.model_matrix.matrix)
+            self.tree.draw(self.shader)
+            self.model_matrix.pop_matrix()
 
     def carMove(self, delta_time):
         if self.w_key_down:
@@ -160,6 +186,9 @@ class GraphicsProgram3D:
         #cube for now, will be a car later
         self.drawCar()
         self.drawTree()
+        
+        self.drawGrass()
+        self.drawtest()
 
         #floor
         self.model_matrix.push_matrix()
