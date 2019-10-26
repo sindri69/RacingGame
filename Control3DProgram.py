@@ -11,6 +11,7 @@ import time
 from Shaders import *
 from Matrices import *
 from Car import *
+from obj_3D_loading import *
 
 
 class GraphicsProgram3D:
@@ -33,6 +34,8 @@ class GraphicsProgram3D:
         self.cube = Cube()
         self.cube.set_vertices(self.shader)
 
+        self.tree = load_obj_file(sys.path[0] + "/models" , "birch_tree.obj")
+
         self.clock = pygame.time.Clock()
         self.clock.tick()
 
@@ -45,9 +48,9 @@ class GraphicsProgram3D:
         self.LSHIFT_key_down = False
 
         self.shader.set_light_position(Point(10.0, 10.0, 10.0))
-        self.shader.set_light_diffuse(1.0, 1.0, 1.0)
-        self.shader.set_light_specular(0.8, 0.3, 0.4)
-        self.shader.set_light_ambiance(0.1, 0.1, 0.1)
+        self.shader.set_light_diffuse(0.1, 0.9, 0.1)
+        self.shader.set_light_specular(0.9, 0.1, 0.1)
+        self.shader.set_light_ambiance(0.0, 0.0, 0.0)
 
         self.car = Car(1.0,1.0,1.0)
 
@@ -64,16 +67,22 @@ class GraphicsProgram3D:
     def drawCar(self):
         self.model_matrix.push_matrix()
         self.model_matrix.add_translation(self.car.position.x, self.car.position.y, self.car.position.z)
-        self.model_matrix.add_rotateY(self.car.angle)
+        self.model_matrix.add_rotateY(-self.car.angle)
         self.model_matrix.add_scale(2.0, 1.5, 4.0)
         self.shader.set_model_matrix(self.model_matrix.matrix)
-        self.shader.set_material_diffuse(0.3,0.3,0.3)
+        self.shader.set_material_diffuse(Color(0.3,0.3,0.3))
         self.shader.set_material_shininess(2)
         self.cube.set_vertices(self.shader)
         self.cube.draw(self.shader)
         self.model_matrix.pop_matrix()
 
-
+    def drawTree(self):
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_translation(3.0, 1.0, 3.0)
+        self.model_matrix.add_scale(2.0, 1.5, 4.0)
+        self.shader.set_model_matrix(self.model_matrix.matrix)
+        self.tree.draw(self.shader)
+        self.model_matrix.pop_matrix()
 
 
     def carMove(self, delta_time):
@@ -150,13 +159,14 @@ class GraphicsProgram3D:
 
         #cube for now, will be a car later
         self.drawCar()
+        self.drawTree()
 
         #floor
         self.model_matrix.push_matrix()
         self.model_matrix.add_translation(8.0, -0.2, 8.0)
         self.model_matrix.add_scale(32.0, 0.4, 32.0)
         self.shader.set_model_matrix(self.model_matrix.matrix)
-        self.shader.set_material_diffuse(0.9,0.9,0.9)
+        self.shader.set_material_diffuse(Color(0.9,0.9,0.9))
         self.shader.set_material_shininess(2)
         self.cube.set_vertices(self.shader)
         self.cube.draw(self.shader)

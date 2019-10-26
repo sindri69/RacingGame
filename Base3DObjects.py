@@ -7,7 +7,7 @@ from OpenGL.GLU import *
 
 import math
 from math import *
-
+import numpy
 
 class Point:
     def __init__(self, x, y, z):

@@ -9,7 +9,7 @@ uniform vec4 u_light_specular;
 uniform vec4 u_material_ambiance;
 uniform vec4 u_material_diffuse;
 uniform vec4 u_material_specular;
-uniform int u_material_shininess;
+uniform float u_material_shininess;
 
 
 void main(void)
