@@ -96,9 +96,9 @@ class GraphicsProgram3D:
         self.car.acceleration = max(-self.car.max_acceleration, min(self.car.acceleration, self.car.max_acceleration))
 
         if self.d_key_down:
-            self.car.steering -= pi / 6 * delta_time
+            self.car.steering -= (pi / 6 )* delta_time
         elif self.a_key_down:
-            self.car.steering += pi / 6 * delta_time
+            self.car.steering += (pi / 6 )* delta_time
         else:
             self.car.steering = 0
             self.car.steering = max(-self.car.max_steering, min(self.car.steering, self.car.max_steering))

@@ -99,6 +99,13 @@ class Shader3D:
     def set_material_shininess(self, shininess):
         glUniform1i(self.materialShininessLoc, shininess)
 
+    ##from the Shaders.py that came with MeshModelAddon
+    def set_attribute_buffers(self, vertex_buffer_id):
+        glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_id)
+        glVertexAttribPointer(self.positionLoc, 3, GL_FLOAT, False, 6 * sizeof(GLfloat), OpenGL.GLU.ctypes.c_void_p(0))
+        glVertexAttribPointer(self.normalLoc, 3, GL_FLOAT, False, 6 * sizeof(GLfloat), OpenGL.GLU.ctypes.c_void_p(3 * sizeof(GLfloat)))
+
+
     # def set_light1_position(self, pos):
     #       glUniform4f(self.light1PosLoc, pos.x, pos.y, pos.z, 1.0)
     # def set_light1_direction(self, pos):
