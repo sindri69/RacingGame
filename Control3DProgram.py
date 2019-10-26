@@ -49,10 +49,10 @@ class GraphicsProgram3D:
         self.d_key_down = False
         self.LSHIFT_key_down = False
 
-        self.shader.set_light_position(Point(5.0, 5.0, 5.0))
+        self.shader.set_light_position(Point(10.0, 10.0, 5.0))
         self.shader.set_light_diffuse(1.0, 1.0, 1.0)
-        self.shader.set_light_specular(0.9, 0.1, 0.1)
-        self.shader.set_light_ambiance(0.1, 0.1, 0.1)
+        self.shader.set_light_specular(0.1, 0.8, 0.1)
+        self.shader.set_light_ambiance(0.0, 0.0, 0.0)
 
         self.car = Car(1.0,1.0,1.0)
 
@@ -72,7 +72,7 @@ class GraphicsProgram3D:
         self.model_matrix.add_rotateY(-self.car.angle)
         self.model_matrix.add_scale(2.0, 1.5, 4.0)
         self.shader.set_model_matrix(self.model_matrix.matrix)
-        self.shader.set_material_diffuse(Color(0.3,0.3,0.3))
+        self.shader.set_material_diffuse(Color(0.2,0.8,0.4))
         self.shader.set_material_shininess(2)
         self.cube.set_vertices(self.shader)
         self.cube.draw(self.shader)
@@ -131,9 +131,9 @@ class GraphicsProgram3D:
         self.car.acceleration = max(-self.car.max_acceleration, min(self.car.acceleration, self.car.max_acceleration))
 
         if self.d_key_down:
-            self.car.steering -= (pi / 6 )* delta_time
+            self.car.steering -= (pi / 10 )* delta_time
         elif self.a_key_down:
-            self.car.steering += (pi / 6 )* delta_time
+            self.car.steering += (pi / 10 )* delta_time
         else:
             self.car.steering = 0
             self.car.steering = max(-self.car.max_steering, min(self.car.steering, self.car.max_steering))
@@ -166,6 +166,7 @@ class GraphicsProgram3D:
 
         self.model_matrix.load_identity()
         #self.cube.set_vertices(self.shaderself.shader)
+        self.view_matrix.look(Point(self.car.position.x + (sin(self.car.angle) * 3), self.car.position.y + 1, self.car.position.z - (cos(self.car.angle) * 3)), Point(self.car.position.x, self.car.position.y, self.car.position.z), Vector(0, 1, 0))
         self.shader.set_view_matrix(self.view_matrix.get_matrix())
         self.shader.set_eye_position(self.view_matrix.eye)
         # self.shader.set_light_position(Point(10.0, 10.0, 10.0))
