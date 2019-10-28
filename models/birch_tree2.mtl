@@ -1,0 +1,22 @@
+# Blender MTL File: 'birch_tree.blend'
+# Material Count: 2
+
+newmtl Tree.Birch.Bark.Mat
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.945318 0.932047 0.458823
+Ks 0.200000 0.200000 0.200000
+Ke 0.0 0.0 0.0
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Tree.Birch.Leaf.Summer.Mat
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.574821 0.0059993 0.126086
+Ks 0.200000 0.200000 0.200000
+Ke 0.0 0.0 0.0
+Ni 1.000000
+d 1.000000
+illum 2

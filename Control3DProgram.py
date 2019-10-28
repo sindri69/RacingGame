@@ -34,9 +34,10 @@ class GraphicsProgram3D:
         self.cube = Cube()
         self.cube.set_vertices(self.shader)
 
-        self.tree = load_obj_file(sys.path[0] + "/models" , "birch_tree.obj")
+        self.tree = load_obj_file(sys.path[0] + "/models" , "birch_tree2.obj")
         self.grass = load_obj_file(sys.path[0] + "/models" , "Grass.obj")
         self.test = load_obj_file(sys.path[0] + "/models" , "test2.obj")
+        self.lambo = load_obj_file(sys.path[0] + "/models" , "lambo.obj")
 
         self.clock = pygame.time.Clock()
         self.clock.tick()
@@ -101,6 +102,14 @@ class GraphicsProgram3D:
         self.shader.set_model_matrix(self.model_matrix.matrix)
         self.test.draw(self.shader)
         self.model_matrix.pop_matrix() 
+
+    def drawLambo(self):
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_scale(2.0, 2.0, 2.0)
+        self.model_matrix.add_translation(2, 1.0, 3.0)
+        self.shader.set_model_matrix(self.model_matrix.matrix)
+        self.lambo.draw(self.shader)
+        self.model_matrix.pop_matrix()    
 
     def drawForrest(self, howmanytrees):
         for x in range (1, howmanytrees):
@@ -190,6 +199,7 @@ class GraphicsProgram3D:
         
         self.drawGrass()
         self.drawtest()
+        self.drawLambo()
 
         #floor
         self.model_matrix.push_matrix()
