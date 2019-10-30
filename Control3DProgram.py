@@ -1,5 +1,6 @@
 from OpenGL.GL import *
 from OpenGL.GLU import *
+from OpenGL.GLUT import * #for the skybox
 from math import *
 
 import pygame
@@ -7,6 +8,8 @@ from pygame.locals import *
 
 import sys
 import time
+
+from PIL import Image #for the skybox
 
 from Shaders import *
 from Matrices import *
@@ -31,13 +34,20 @@ class GraphicsProgram3D:
         self.projection_matrix.set_perspective(pi/2, 4/3, 0.3, 30)
         self.shader.set_projection_matrix(self.projection_matrix.get_matrix())
 
+        #self.loadskybox()
+
+        self.skysphere_shader = SkysphereShader()
+        self.skysphere_shader.use()
+        self.skysphere = SkySphere()
+        
+        self.shader.use()
         self.cube = Cube()
         self.cube.set_vertices(self.shader)
 
-        self.tree = load_obj_file(sys.path[0] + "/models" , "birch_tree2.obj")
-        self.grass = load_obj_file(sys.path[0] + "/models" , "Grass.obj")
-        self.test = load_obj_file(sys.path[0] + "/models" , "test2.obj")
-        self.lambo = load_obj_file(sys.path[0] + "/models" , "lambo.obj")
+        #self.tree = load_obj_file(sys.path[0] + "/models" , "birch_tree2.obj")
+        #self.grass = load_obj_file(sys.path[0] + "/models" , "Grass.obj")
+        #self.test = load_obj_file(sys.path[0] + "/models" , "test2.obj")
+        #self.lambo = load_obj_file(sys.path[0] + "/models" , "lambo.obj")
 
         self.clock = pygame.time.Clock()
         self.clock.tick()
@@ -55,9 +65,28 @@ class GraphicsProgram3D:
         self.shader.set_light_specular(0.1, 0.8, 0.1)
         self.shader.set_light_ambiance(0.0, 0.0, 0.0)
 
+        ##textures
+        self.texture_id_skysphere = self.load_texture(sys.path[0] + "/textures/skysphere.jpg")
+
+        #could leave empty for less detail
+        self.skysphere = SkySphere()
+
         self.car = Car(1.0,1.0,1.0)
 
         self.white_background = False
+
+    def load_texture(self, path_string):
+        surface = pygame.image.load(path_string)
+        tex_string = pygame.image.tostring(surface, "RGBA", 1)
+        width = surface.get_width()
+        height = surface.get_height()
+        tex_id = glGenTextures(1)
+        glBindTexture(GL_TEXTURE_2D, tex_id)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex_string)
+        return tex_id
+
 
     def update(self):
         delta_time = self.clock.tick() / 1000.0
@@ -87,12 +116,12 @@ class GraphicsProgram3D:
         self.tree.draw(self.shader)
         self.model_matrix.pop_matrix()
 
-    def drawGrass(self):
-        self.model_matrix.push_matrix()
-        self.model_matrix.add_scale(3.0, 0.4, 3.0)
-        self.shader.set_model_matrix(self.model_matrix.matrix)
-        self.grass.draw(self.shader)
-        self.model_matrix.pop_matrix()
+    # def drawGrass(self):
+    #     self.model_matrix.push_matrix()
+    #     self.model_matrix.add_scale(3.0, 0.4, 3.0)
+    #     self.shader.set_model_matrix(self.model_matrix.matrix)
+    #     self.grass.draw(self.shader)
+    #     self.model_matrix.pop_matrix()
 
     
     def drawtest(self):
@@ -169,11 +198,39 @@ class GraphicsProgram3D:
             glClearColor(1.0, 1.0, 1.0, 1.0)
         else:
             glClearColor(0.0, 0.0, 0.0, 1.0)
-        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)  ### --- YOU CAN ALSO CLEAR ONLY THE COLOR OR ONLY THE DEPTH --- ###
+        glClear(GL_COLOR_BUFFER_BIT)  ### --- YOU CAN ALSO CLEAR ONLY THE COLOR OR ONLY THE DEPTH --- ###
 
         glViewport(0, 0, 800, 600)
 
         self.model_matrix.load_identity()
+        
+        ##important to draw skysphere first
+        glDisable(GL_DEPTH_TEST)
+        self.skysphere_shader.use()
+        self.skysphere_shader.set_projection_matrix(self.projection_matrix.get_matrix())
+        self.skysphere_shader.set_view_matrix(self.view_matrix.get_matrix())
+
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, self.texture_id_skysphere)
+        self.skysphere_shader.set_diffuse_tex(0)
+        #self.skysphere_shader.set_alpha_tex(None)
+
+        self.skysphere_shader.set_opacity(1.0)
+
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_translation(self.view_matrix.eye.x, self.view_matrix.eye.y, self.view_matrix.eye.z)
+        self.skysphere_shader.set_model_matrix(self.model_matrix.matrix)
+        
+        self.skysphere.draw(self.skysphere_shader)
+
+        self.model_matrix.pop_matrix()
+        
+        glEnable(GL_DEPTH_TEST)
+
+        
+        glClear(GL_DEPTH_BUFFER_BIT) 
+        
+        self.shader.use()
         #self.cube.set_vertices(self.shaderself.shader)
         self.view_matrix.look(Point(self.car.position.x + (sin(self.car.angle) * 3), self.car.position.y + 1, self.car.position.z - (cos(self.car.angle) * 3)), Point(self.car.position.x, self.car.position.y, self.car.position.z), Vector(0, 1, 0))
         self.shader.set_view_matrix(self.view_matrix.get_matrix())
@@ -181,7 +238,7 @@ class GraphicsProgram3D:
         # self.shader.set_light_position(Point(10.0, 10.0, 10.0))
         # self.shader.set_light_diffuse(0.8, 0.3, 0.4)
         # self.shader.set_light_specular(0.8, 0.3, 0.4)
-        # self.shader.set_light_ambiance(0.1, 0.1, 0.1)
+        self.shader.set_light_ambiance(0.1, 0.1, 0.1)
 
         # self.shader.set_light1_position(Point(1.0, 1.0, 1.0))
         # self.shader.set_light1_diffuse(0.3, 0.6, 0.2)
@@ -194,12 +251,12 @@ class GraphicsProgram3D:
         # self.shader.set_light2_ambiance(0.1, 0.0, 0.0)
 
         #cube for now, will be a car later
-        self.drawCar()
-        self.drawTree()
+        #self.drawCar()
+        #self.drawTree()
         
-        self.drawGrass()
-        self.drawtest()
-        self.drawLambo()
+        #self.drawGrass()
+        #self.drawtest()
+        #self.drawLambo()
 
         #floor
         self.model_matrix.push_matrix()
