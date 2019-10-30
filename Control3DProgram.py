@@ -45,16 +45,9 @@ class GraphicsProgram3D:
         self.cube = Cube()
         self.cube.set_vertices(self.shader)
 
-<<<<<<< HEAD
         self.tree = load_obj_file(sys.path[0] + "/models" , "birch_tree.obj")
         # self.grass = load_obj_file(sys.path[0] + "/models" , "Grass.obj")
         self.test = load_obj_file(sys.path[0] + "/models" , "test2.obj")
-=======
-        #self.tree = load_obj_file(sys.path[0] + "/models" , "birch_tree2.obj")
-        #self.grass = load_obj_file(sys.path[0] + "/models" , "Grass.obj")
-        #self.test = load_obj_file(sys.path[0] + "/models" , "test2.obj")
-        #self.lambo = load_obj_file(sys.path[0] + "/models" , "lambo.obj")
->>>>>>> 74d9a99e2290271c7ef82e404d223becdc017c17
 
         self.clock = pygame.time.Clock()
         self.clock.tick()
