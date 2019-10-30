@@ -12,7 +12,8 @@ from Shaders import *
 from Matrices import *
 from Car import *
 from obj_3D_loading import *
-
+from CarPhysics import *
+from CarSimple import *
 
 class GraphicsProgram3D:
     def __init__(self):
@@ -35,7 +36,7 @@ class GraphicsProgram3D:
         self.cube.set_vertices(self.shader)
 
         self.tree = load_obj_file(sys.path[0] + "/models" , "birch_tree.obj")
-        self.grass = load_obj_file(sys.path[0] + "/models" , "Grass.obj")
+        # self.grass = load_obj_file(sys.path[0] + "/models" , "Grass.obj")
         self.test = load_obj_file(sys.path[0] + "/models" , "test2.obj")
 
         self.clock = pygame.time.Clock()
@@ -55,21 +56,25 @@ class GraphicsProgram3D:
         self.shader.set_light_ambiance(0.0, 0.0, 0.0)
 
         self.car = Car(1.0,1.0,1.0)
-
+        self.carphysics = CarPhysics()
+        self.carSimple = CarSimple()
         self.white_background = False
 
     def update(self):
         delta_time = self.clock.tick() / 1000.0
 
         #self.playerMove(delta_time)
-        self.carMove(delta_time)
-        self.car.update(delta_time)
-        print(self.car.steering)
-
+        self.carSimpleMove(delta_time)
+        self.carSimple.update(delta_time)
+        # self.carMove(delta_time)
+        # self.car.update(delta_time)
+        print(self.carSimple.position.x, self.carSimple.position.y, self.carSimple.position.z )
+        print(self.carSimple.carHeading)
     def drawCar(self):
         self.model_matrix.push_matrix()
-        self.model_matrix.add_translation(self.car.position.x, self.car.position.y, self.car.position.z)
-        self.model_matrix.add_rotateY(-self.car.angle)
+        self.model_matrix.add_translation(self.carSimple.position.x, self.carSimple.position.y, self.carSimple.position.z)
+        # self.model_matrix.add_translation(1.0, 1.0, 1.0)
+        self.model_matrix.add_rotateY(self.carSimple.carHeading)
         self.model_matrix.add_scale(2.0, 1.5, 4.0)
         self.shader.set_model_matrix(self.model_matrix.matrix)
         self.shader.set_material_diffuse(Color(0.2,0.8,0.4))
@@ -110,6 +115,19 @@ class GraphicsProgram3D:
             self.shader.set_model_matrix(self.model_matrix.matrix)
             self.tree.draw(self.shader)
             self.model_matrix.pop_matrix()
+    def carSimpleMove(self, delta_time):
+        if self.w_key_down:
+            self.carSimple.carSpeed += 10 * delta_time
+        if self.d_key_down:
+            self.carSimple.steerAngle -= (pi / 5 )* delta_time
+        if self.a_key_down:
+            self.carSimple.steerAngle += (pi / 5 )* delta_time
+        if not self.a_key_down and not self.d_key_down:
+            self.carSimple.steerAngle = 0
+        if self.s_key_down:
+            self.carSimple.carSpeed -= 10 * delta_time
+      
+        self.carSimple.steerAngle = max(-self.carSimple.maxSteerAngle, min(self.carSimple.steerAngle, self.carSimple.maxSteerAngle))
 
     def carMove(self, delta_time):
         if self.w_key_down:
@@ -166,7 +184,7 @@ class GraphicsProgram3D:
 
         self.model_matrix.load_identity()
         #self.cube.set_vertices(self.shaderself.shader)
-        self.view_matrix.look(Point(self.car.position.x + (sin(self.car.angle) * 3), self.car.position.y + 1, self.car.position.z - (cos(self.car.angle) * 3)), Point(self.car.position.x, self.car.position.y, self.car.position.z), Vector(0, 1, 0))
+        self.view_matrix.look(Point(self.carSimple.position.x + (sin(-self.carSimple.carHeading) * 3), self.carSimple.position.y + 1, self.carSimple.position.z - (cos(-self.carSimple.carHeading) * 3)), Point(self.carSimple.position.x, self.carSimple.position.y, self.carSimple.position.z), Vector(0, 1, 0))
         self.shader.set_view_matrix(self.view_matrix.get_matrix())
         self.shader.set_eye_position(self.view_matrix.eye)
         # self.shader.set_light_position(Point(10.0, 10.0, 10.0))
@@ -188,13 +206,13 @@ class GraphicsProgram3D:
         self.drawCar()
         self.drawTree()
         
-        self.drawGrass()
+        # self.drawGrass()
         self.drawtest()
 
         #floor
         self.model_matrix.push_matrix()
-        self.model_matrix.add_translation(8.0, -0.2, 8.0)
-        self.model_matrix.add_scale(32.0, 0.4, 32.0)
+        self.model_matrix.add_translation(20.0, -0.2, 20.0)
+        self.model_matrix.add_scale(80.0, 0.4, 80.0)
         self.shader.set_model_matrix(self.model_matrix.matrix)
         self.shader.set_material_diffuse(Color(0.9,0.9,0.9))
         self.shader.set_material_shininess(2)
