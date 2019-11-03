@@ -18,6 +18,8 @@ from obj_3D_loading import *
 from CarPhysics import *
 from CarSimple import *
 
+from playsound import playsound
+
 class GraphicsProgram3D:
     def __init__(self):
 
@@ -46,8 +48,10 @@ class GraphicsProgram3D:
         self.cube.set_vertices(self.shader)
 
         self.tree = load_obj_file(sys.path[0] + "/models" , "birch_tree.obj")
-        # self.grass = load_obj_file(sys.path[0] + "/models" , "Grass.obj")
+        self.grass = load_obj_file(sys.path[0] + "/models" , "Grass.obj")
         self.test = load_obj_file(sys.path[0] + "/models" , "test2.obj")
+
+        playsound("./sounds/oh_yeah.mp3", False)
 
         self.clock = pygame.time.Clock()
         self.clock.tick()
@@ -69,7 +73,7 @@ class GraphicsProgram3D:
         self.texture_id_skysphere = self.load_texture(sys.path[0] + "/textures/skysphere.jpg")
 
         #could leave empty for less detail
-        self.skysphere = SkySphere()
+        self.skysphere = SkySphere(256, 512)
 
         self.car = Car(1.0,1.0,1.0)
         self.carphysics = CarPhysics()
@@ -120,12 +124,12 @@ class GraphicsProgram3D:
         self.tree.draw(self.shader)
         self.model_matrix.pop_matrix()
 
-    # def drawGrass(self):
-    #     self.model_matrix.push_matrix()
-    #     self.model_matrix.add_scale(3.0, 0.4, 3.0)
-    #     self.shader.set_model_matrix(self.model_matrix.matrix)
-    #     self.grass.draw(self.shader)
-    #     self.model_matrix.pop_matrix()
+    def drawGrass(self):
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_scale(3.0, 0.4, 3.0)
+        self.shader.set_model_matrix(self.model_matrix.matrix)
+        self.grass.draw(self.shader)
+        self.model_matrix.pop_matrix()
 
     
     def drawtest(self):
@@ -268,11 +272,11 @@ class GraphicsProgram3D:
         # self.shader.set_light2_ambiance(0.1, 0.0, 0.0)
 
         #cube for now, will be a car later
-        #self.drawCar()
-        #self.drawTree()
+        self.drawCar()
+        self.drawTree()
         
-        # self.drawGrass()
-        self.drawtest()
+        #self.drawGrass()
+
 
         #floor
         self.model_matrix.push_matrix()
