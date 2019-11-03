@@ -34,7 +34,7 @@ class GraphicsProgram3D:
         self.view_matrix = ViewMatrix()
         self.view_matrix.look(Point(1, 3, -4), Point(0, 3, 1), Vector(0, 1, 0))
         self.projection_matrix = ProjectionMatrix()
-        self.projection_matrix.set_perspective(pi/2, 4/3, 0.3, 30)
+        self.projection_matrix.set_perspective(pi/2, 8/3, 0.3, 30)
         self.shader.set_projection_matrix(self.projection_matrix.get_matrix())
 
         self.skysphere_shader = SkysphereShader()
@@ -148,13 +148,15 @@ class GraphicsProgram3D:
         drawCar1(self)
         drawCar2(self)
         drawTree(self)
+        drawTrack(self, self.track)
+
         #self.drawGrass()
 
         #drawfloor(self)       
        
        
         #player 1 view, tophalf
-        glViewport(0, 300, 800, 600)
+        glViewport(0, 300, 800, 300)
 
         self.model_matrix.load_identity()
         self.view_matrix.look(Point(self.carSimple1.position.x + (sin(-self.carSimple1.carHeading) * 3), (self.carSimple1.position.y + 1), self.carSimple1.position.z - (cos(-self.carSimple1.carHeading) * 3) ), Point(self.carSimple1.position.x, self.carSimple1.position.y, self.carSimple1.position.z), Vector(0, 1, 0))
