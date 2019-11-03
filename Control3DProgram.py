@@ -80,19 +80,6 @@ class GraphicsProgram3D:
         self.carSimple = CarSimple()
         self.white_background = False
 
-    def load_texture(self, path_string):
-        surface = pygame.image.load(path_string)
-        tex_string = pygame.image.tostring(surface, "RGBA", 1)
-        width = surface.get_width()
-        height = surface.get_height()
-        tex_id = glGenTextures(1)
-        glBindTexture(GL_TEXTURE_2D, tex_id)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex_string)
-        return tex_id
-
-
     def update(self):
         delta_time = self.clock.tick() / 1000.0
 
@@ -103,47 +90,6 @@ class GraphicsProgram3D:
         # self.car.update(delta_time)
         print(self.carSimple.position.x, self.carSimple.position.y, self.carSimple.position.z )
         print(self.carSimple.carHeading)
-
-    def carSimpleMove(self, delta_time):
-        if self.w_key_down:
-            self.carSimple.carSpeed += 10 * delta_time
-        if self.d_key_down:
-            self.carSimple.steerAngle -= (pi / 5 )* delta_time
-        if self.a_key_down:
-            self.carSimple.steerAngle += (pi / 5 )* delta_time
-        if not self.a_key_down and not self.d_key_down:
-            self.carSimple.steerAngle = 0
-        if self.s_key_down:
-            self.carSimple.carSpeed -= 10 * delta_time
-      
-        self.carSimple.steerAngle = max(-self.carSimple.maxSteerAngle, min(self.carSimple.steerAngle, self.carSimple.maxSteerAngle))
-
-    def carMove(self, delta_time):
-        if self.w_key_down:
-            if self.car.velocity.x < 0:
-                self.car.acceleration = self.car.brake_deceleration
-            else:
-                self.car.acceleration += 1 * delta_time
-        elif self.s_key_down:
-            if self.car.velocity.x > 0:
-                self.car.acceleration = -self.car.brake_deceleration
-            else:
-                self.car.acceleration -= 1 * delta_time
-        elif self.LSHIFT_key_down:
-            if self.car.velocity.x != 0:
-                self.car.acceleration = copysign(self.car.max_acceleration, -self.car.velocity.x)
-
-        else:
-            self.car.acceleration = 0
-        self.car.acceleration = max(-self.car.max_acceleration, min(self.car.acceleration, self.car.max_acceleration))
-
-        if self.d_key_down:
-            self.car.steering -= (pi / 10 )* delta_time
-        elif self.a_key_down:
-            self.car.steering += (pi / 10 )* delta_time
-        else:
-            self.car.steering = 0
-            self.car.steering = max(-self.car.max_steering, min(self.car.steering, self.car.max_steering))
 
     def display(self):
         glEnable(GL_DEPTH_TEST)  ### --- NEED THIS FOR NORMAL 3D BUT MANY EFFECTS BETTER WITH glDisable(GL_DEPTH_TEST) ... try it! --- ###
@@ -199,17 +145,7 @@ class GraphicsProgram3D:
         drawTree(self)
         #self.drawGrass()
 
-
-        #floor
-        self.model_matrix.push_matrix()
-        self.model_matrix.add_translation(20.0, -0.2, 20.0)
-        self.model_matrix.add_scale(80.0, 0.4, 80.0)
-        self.shader.set_model_matrix(self.model_matrix.matrix)
-        self.shader.set_material_diffuse(Color(0.9,0.9,0.9))
-        self.shader.set_material_shininess(2)
-        self.cube.set_vertices(self.shader)
-        self.cube.draw(self.shader)
-        self.model_matrix.pop_matrix()
+        drawfloor(self)
 
         pygame.display.flip()
 
@@ -258,6 +194,60 @@ class GraphicsProgram3D:
 
     def start(self):
         self.program_loop()
+    
+    def load_texture(self, path_string):
+        surface = pygame.image.load(path_string)
+        tex_string = pygame.image.tostring(surface, "RGBA", 1)
+        width = surface.get_width()
+        height = surface.get_height()
+        tex_id = glGenTextures(1)
+        glBindTexture(GL_TEXTURE_2D, tex_id)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex_string)
+        return tex_id
+
+    def carSimpleMove(self, delta_time):
+        if self.w_key_down:
+            self.carSimple.carSpeed += 10 * delta_time
+        if self.d_key_down:
+            self.carSimple.steerAngle -= (pi / 5 )* delta_time
+        if self.a_key_down:
+            self.carSimple.steerAngle += (pi / 5 )* delta_time
+        if not self.a_key_down and not self.d_key_down:
+            self.carSimple.steerAngle = 0
+        if self.s_key_down:
+            self.carSimple.carSpeed -= 10 * delta_time
+      
+        self.carSimple.steerAngle = max(-self.carSimple.maxSteerAngle, min(self.carSimple.steerAngle, self.carSimple.maxSteerAngle))
+
+    def carMove(self, delta_time):
+        if self.w_key_down:
+            if self.car.velocity.x < 0:
+                self.car.acceleration = self.car.brake_deceleration
+            else:
+                self.car.acceleration += 1 * delta_time
+        elif self.s_key_down:
+            if self.car.velocity.x > 0:
+                self.car.acceleration = -self.car.brake_deceleration
+            else:
+                self.car.acceleration -= 1 * delta_time
+        elif self.LSHIFT_key_down:
+            if self.car.velocity.x != 0:
+                self.car.acceleration = copysign(self.car.max_acceleration, -self.car.velocity.x)
+
+        else:
+            self.car.acceleration = 0
+        self.car.acceleration = max(-self.car.max_acceleration, min(self.car.acceleration, self.car.max_acceleration))
+
+        if self.d_key_down:
+            self.car.steering -= (pi / 10 )* delta_time
+        elif self.a_key_down:
+            self.car.steering += (pi / 10 )* delta_time
+        else:
+            self.car.steering = 0
+            self.car.steering = max(-self.car.max_steering, min(self.car.steering, self.car.max_steering))
+
 
 if __name__ == "__main__":
     GraphicsProgram3D().start()

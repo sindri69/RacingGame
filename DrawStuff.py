@@ -5,7 +5,6 @@ from Car import *
 def drawCar(self):
     self.model_matrix.push_matrix()
     self.model_matrix.add_translation(self.carSimple.position.x, self.carSimple.position.y, self.carSimple.position.z)
-    # self.model_matrix.add_translation(1.0, 1.0, 1.0)
     self.model_matrix.add_rotateY(self.carSimple.carHeading)
     self.model_matrix.add_scale(2.0, 1.5, 4.0)
     self.shader.set_model_matrix(self.model_matrix.matrix)
@@ -55,3 +54,14 @@ def drawForrest(self, howmanytrees):
         self.shader.set_model_matrix(self.model_matrix.matrix)
         self.tree.draw(self.shader)
         self.model_matrix.pop_matrix()
+
+def drawfloor(self):
+    self.model_matrix.push_matrix()
+    self.model_matrix.add_translation(20.0, -0.2, 20.0)
+    self.model_matrix.add_scale(80.0, 0.4, 80.0)
+    self.shader.set_model_matrix(self.model_matrix.matrix)
+    self.shader.set_material_diffuse(Color(0.9,0.9,0.9))
+    self.shader.set_material_shininess(2)
+    self.cube.set_vertices(self.shader)
+    self.cube.draw(self.shader)
+    self.model_matrix.pop_matrix()
