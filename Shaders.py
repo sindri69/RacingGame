@@ -6,6 +6,8 @@ import sys
 from Base3DObjects import *
 from numpy import *
 
+
+
 class Shader3D:
     def __init__(self):
         vert_shader = glCreateShader(GL_VERTEX_SHADER)
