@@ -111,6 +111,7 @@ class GraphicsProgram3D:
         glViewport(0, 0, 800, 300)
 
         self.model_matrix.load_identity()
+        self.view_matrix.look(Point(self.carSimple2.position.x + (sin(-self.carSimple2.carHeading) * 3), self.carSimple2.position.y + 1, self.carSimple2.position.z - (cos(-self.carSimple2.carHeading) * 3)), Point(self.carSimple2.position.x, self.carSimple2.position.y, self.carSimple2.position.z), Vector(0, 1, 0))
         
         ##important to draw skysphere first
         glDisable(GL_DEPTH_TEST)
@@ -139,7 +140,6 @@ class GraphicsProgram3D:
         
         self.shader.use()
         #self.cube.set_vertices(self.shaderself.shader)
-        self.view_matrix.look(Point(self.carSimple2.position.x + (sin(-self.carSimple2.carHeading) * 3), self.carSimple2.position.y + 1, self.carSimple2.position.z - (cos(-self.carSimple2.carHeading) * 3)), Point(self.carSimple2.position.x, self.carSimple2.position.y, self.carSimple2.position.z), Vector(0, 1, 0))
         self.shader.set_view_matrix(self.view_matrix.get_matrix())
         self.shader.set_eye_position(self.view_matrix.eye)
         self.shader.set_light_ambiance(0.1, 0.1, 0.1)
@@ -150,7 +150,7 @@ class GraphicsProgram3D:
         drawTree(self)
         #self.drawGrass()
 
-        drawfloor(self)       
+        #drawfloor(self)       
        
        
         #player 1 view, tophalf
