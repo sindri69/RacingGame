@@ -24,7 +24,7 @@ class GraphicsProgram3D:
     def __init__(self):
 
         pygame.init()
-        pygame.display.set_mode((800,600), pygame.OPENGL|pygame.DOUBLEBUF)
+        pygame.display.set_mode((1200,900), pygame.OPENGL|pygame.DOUBLEBUF)
 
         self.shader = Shader3D()
         self.shader.use()
@@ -94,9 +94,7 @@ class GraphicsProgram3D:
         self.carSimple1.update(delta_time)
         self.carSimple2.update(delta_time)
         # print("car 1 position: ",self.carSimple1.position.x, self.carSimple1.position.y, self.carSimple1.position.z)
-        # print("car 2 position: ", self.carSimple2.position.x, self.carSimple2.position.y, self.carSimple2.position.z )
-        print("car 1 head: ", self.carSimple1.carHeading)
-        print("car 2 head: ", self.carSimple2.carHeading)
+
 
     def display(self):
         glEnable(GL_DEPTH_TEST)  ### --- NEED THIS FOR NORMAL 3D BUT MANY EFFECTS BETTER WITH glDisable(GL_DEPTH_TEST) ... try it! --- ###
@@ -108,7 +106,7 @@ class GraphicsProgram3D:
         glClear(GL_COLOR_BUFFER_BIT)  ### --- YOU CAN ALSO CLEAR ONLY THE COLOR OR ONLY THE DEPTH --- ###
 
         #player 2 view, bottomhalf
-        glViewport(0, 0, 800, 300)
+        glViewport(0, 0, 1200, 450)
 
         self.model_matrix.load_identity()
         self.view_matrix.look(Point(self.carSimple2.position.x + (sin(-self.carSimple2.carHeading) * 3), self.carSimple2.position.y + 1, self.carSimple2.position.z - (cos(-self.carSimple2.carHeading) * 3)), Point(self.carSimple2.position.x, self.carSimple2.position.y, self.carSimple2.position.z), Vector(0, 1, 0))
@@ -156,7 +154,7 @@ class GraphicsProgram3D:
        
        
         #player 1 view, tophalf
-        glViewport(0, 300, 800, 300)
+        glViewport(0, 450, 1200, 450)
 
         self.model_matrix.load_identity()
         self.view_matrix.look(Point(self.carSimple1.position.x + (sin(-self.carSimple1.carHeading) * 3), (self.carSimple1.position.y + 1), self.carSimple1.position.z - (cos(-self.carSimple1.carHeading) * 3) ), Point(self.carSimple1.position.x, self.carSimple1.position.y, self.carSimple1.position.z), Vector(0, 1, 0))
@@ -293,38 +291,38 @@ class GraphicsProgram3D:
     def carSimpleMove1(self, delta_time):
         #playerone
         if self.w_key_down:
-            self.carSimple1.carSpeed += 10 * delta_time
-            print("car1 w key down")
+            if self.carSimple1.carSpeed < self.carSimple1.maxSpeed:
+                self.carSimple1.carSpeed += 10 * delta_time
+                print(self.carSimple1.carSpeed)
         if self.d_key_down:
             self.carSimple1.steerAngle -= (pi / 5 )* delta_time
-            print("car1 d key down")
         if self.a_key_down:
             self.carSimple1.steerAngle += (pi / 5 )* delta_time
-            print("car1 a key down")
         if not self.a_key_down and not self.d_key_down:
             self.carSimple1.steerAngle = 0
         if self.s_key_down:
-            self.carSimple1.carSpeed -= 10 * delta_time
-            print("car1 s key down")
+            if self.carSimple1.carSpeed > self.carSimple1.maxBackSpeed:
+                self.carSimple1.carSpeed -= 10 * delta_time
+                print(self.carSimple1.carSpeed)
       
         self.carSimple1.steerAngle = max(-self.carSimple1.maxSteerAngle, min(self.carSimple1.steerAngle, self.carSimple1.maxSteerAngle))
      
     def carSimpleMove2(self, delta_time): 
         #playertwo
         if self.up_key_down:
-            self.carSimple2.carSpeed += 10 * delta_time
-            print("car2 up key down")
+            if self.carSimple2.carSpeed < self.carSimple2.maxSpeed:
+                self.carSimple2.carSpeed += 10 * delta_time
+                print(self.carSimple2.carSpeed)
         if self.right_key_down:
             self.carSimple2.steerAngle -= (pi / 5 )* delta_time
-            print("car2 right key down")
         if self.left_key_down:
             self.carSimple2.steerAngle += (pi / 5 )* delta_time
-            print("car2 left key down")
         if not self.left_key_down and not self.right_key_down:
             self.carSimple2.steerAngle = 0
         if self.down_key_down:
-            self.carSimple2.carSpeed -= 10 * delta_time
-            print("car2 down key down")
+            if self.carSimple2.carSpeed > self.carSimple2.maxBackSpeed:
+                self.carSimple2.carSpeed -= 10 * delta_time
+                print(self.carSimple2.carSpeed)
       
         self.carSimple2.steerAngle = max(-self.carSimple2.maxSteerAngle, min(self.carSimple2.steerAngle, self.carSimple2.maxSteerAngle))
 
