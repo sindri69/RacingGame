@@ -2,8 +2,8 @@ from Base3DObjects import *
 from math import *
 
 class CarSimple:
-    def __init__(self):
-        self.position = Vector(1.0, 1.0, 1.0)
+    def __init__(self, position):
+        self.position = position
         self.carHeading = 0.0
         self.carSpeed = 0.0
         self.steerAngle = 0.0
