@@ -2,17 +2,29 @@ from Shaders import *
 from Matrices import *
 from Car import *
 
-def drawCar(self):
-    self.model_matrix.push_matrix()
-    self.model_matrix.add_translation(self.carSimple.position.x, self.carSimple.position.y, self.carSimple.position.z)
-    self.model_matrix.add_rotateY(self.carSimple.carHeading)
-    self.model_matrix.add_scale(2.0, 1.5, 4.0)
-    self.shader.set_model_matrix(self.model_matrix.matrix)
-    self.shader.set_material_diffuse(Color(0.2,0.8,0.4))
-    self.shader.set_material_shininess(2)
-    self.cube.set_vertices(self.shader)
-    self.cube.draw(self.shader)
-    self.model_matrix.pop_matrix()
+def drawCar1(car1):
+    car1.model_matrix.push_matrix()
+    car1.model_matrix.add_translation(car1.carSimple1.position.x, car1.carSimple1.position.y, car1.carSimple1.position.z)
+    car1.model_matrix.add_rotateY(car1.carSimple1.carHeading)
+    car1.model_matrix.add_scale(2.0, 1.5, 4.0)
+    car1.shader.set_model_matrix(car1.model_matrix.matrix)
+    car1.shader.set_material_diffuse(Color(0.2,0.8,0.4))
+    car1.shader.set_material_shininess(2)
+    car1.cube.set_vertices(car1.shader)
+    car1.cube.draw(car1.shader)
+    car1.model_matrix.pop_matrix()
+
+def drawCar2(car2):
+    car2.model_matrix.push_matrix()
+    car2.model_matrix.add_translation(car2.carSimple2.position.x, car2.carSimple2.position.y, car2.carSimple2.position.z)
+    car2.model_matrix.add_rotateY(car2.carSimple2.carHeading)
+    car2.model_matrix.add_scale(2.0, 1.5, 4.0)
+    car2.shader.set_model_matrix(car2.model_matrix.matrix)
+    car2.shader.set_material_diffuse(Color(0.2,0.8,0.4))
+    car2.shader.set_material_shininess(2)
+    car2.cube.set_vertices(car2.shader)
+    car2.cube.draw(car2.shader)
+    car2.model_matrix.pop_matrix()
 
 def drawTree(self):
     self.model_matrix.push_matrix()
