@@ -15,9 +15,10 @@ from Car import *
 from obj_3D_loading import *
 from CarPhysics import *
 from CarSimple import *
+from RaceTrack import *
 from DrawStuff import *
 
-from playsound import playsound
+#from playsound import playsound
 
 class GraphicsProgram3D:
     def __init__(self):
@@ -47,10 +48,10 @@ class GraphicsProgram3D:
         self.cube.set_vertices(self.shader)
 
         self.tree = load_obj_file(sys.path[0] + "/models" , "birch_tree.obj")
-        self.grass = load_obj_file(sys.path[0] + "/models" , "Grass.obj")
+#        self.grass = load_obj_file(sys.path[0] + "/models" , "Grass.obj")
         self.test = load_obj_file(sys.path[0] + "/models" , "test2.obj")
 
-        playsound("./sounds/oh_yeah.mp3", False)
+        #playsound("./sounds/oh_yeah.mp3", False)
 
         self.clock = pygame.time.Clock()
         self.clock.tick()
@@ -76,8 +77,8 @@ class GraphicsProgram3D:
         self.skysphere = SkySphere(256, 512)
 
         self.car = Car(1.0,1.0,1.0)
-        self.carphysics = CarPhysics()
         self.carSimple = CarSimple()
+        self.track = RaceTrack(0.1, Point(0.0, 1.0, 0.0), Point(5.0, 1.0, 10.0), Point(10.0, 1.0, 10.0), Point(15.0, 1.0, 0.0))
         self.white_background = False
 
     def update(self):
@@ -86,10 +87,6 @@ class GraphicsProgram3D:
         #self.playerMove(delta_time)
         self.carSimpleMove(delta_time)
         self.carSimple.update(delta_time)
-        # self.carMove(delta_time)
-        # self.car.update(delta_time)
-        print(self.carSimple.position.x, self.carSimple.position.y, self.carSimple.position.z )
-        print(self.carSimple.carHeading)
 
     def display(self):
         glEnable(GL_DEPTH_TEST)  ### --- NEED THIS FOR NORMAL 3D BUT MANY EFFECTS BETTER WITH glDisable(GL_DEPTH_TEST) ... try it! --- ###
@@ -143,9 +140,10 @@ class GraphicsProgram3D:
         #cube for now, will be a car later
         drawCar(self)
         drawTree(self)
+        drawTrack(self, self.track)
         #self.drawGrass()
 
-        drawfloor(self)
+        #drawfloor(self)
 
         pygame.display.flip()
 

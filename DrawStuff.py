@@ -65,3 +65,13 @@ def drawfloor(self):
     self.cube.set_vertices(self.shader)
     self.cube.draw(self.shader)
     self.model_matrix.pop_matrix()
+
+def drawTrack(self, racetrack):
+    self.model_matrix.push_matrix()
+    self.model_matrix.add_translation(10.0, -0.2, 10.0)
+    self.model_matrix.add_scale(40.0, 0.2, 40.0)
+    self.shader.set_model_matrix(self.model_matrix.matrix)
+    self.shader.set_material_diffuse(Color(0.9,0.9,0.9))
+    self.shader.set_material_shininess(2)
+    racetrack.draw(self.shader)
+    self.model_matrix.pop_matrix()
