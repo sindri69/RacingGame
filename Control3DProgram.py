@@ -18,7 +18,8 @@ from CarSimple import *
 from RaceTrack import *
 from DrawStuff import *
 
-#from playsound import playsound
+
+from playsound import playsound
 
 class GraphicsProgram3D:
     def __init__(self):
@@ -44,12 +45,13 @@ class GraphicsProgram3D:
         self.shader.use()
         self.cube = Cube()
         self.cube.set_vertices(self.shader)
+        self.textureCube = TextureCube()
 
         self.tree = load_obj_file(sys.path[0] + "/models" , "birch_tree.obj")
-#        self.grass = load_obj_file(sys.path[0] + "/models" , "Grass.obj")
+        #self.grass = load_obj_file(sys.path[0] + "/models" , "Grass.obj")
         self.test = load_obj_file(sys.path[0] + "/models" , "test2.obj")
 
-        #playsound("./sounds/oh_yeah.mp3", False)
+        playsound("./sounds/oh_yeah.mp3", False)
 
         self.clock = pygame.time.Clock()
         self.clock.tick()
@@ -70,12 +72,14 @@ class GraphicsProgram3D:
         self.right_key_down = False
 
         self.shader.set_light_position(Point(10.0, 10.0, 5.0))
-        self.shader.set_light_diffuse(1.0, 1.0, 1.0)
         self.shader.set_light_specular(0.1, 0.8, 0.1)
+        self.shader.set_light_diffuse(1.0, 1.0, 1.0)
         self.shader.set_light_ambiance(0.0, 0.0, 0.0)
 
         ##textures
         self.texture_id_skysphere = self.load_texture(sys.path[0] + "/textures/skysphere.jpg")
+        self.texture_id_grass = self.load_texture(sys.path[0] + "/textures/grass.jpg")
+
 
         #could leave empty for less detail
         self.skysphere = SkySphere(256, 512)
@@ -129,7 +133,7 @@ class GraphicsProgram3D:
         drawTree(self)
         drawTrack(self, self.track)
 
-        #self.drawGrass()
+        drawGrass(self)
 
         #drawfloor(self)       
        
@@ -156,7 +160,7 @@ class GraphicsProgram3D:
         drawCarAI(self)
         drawTree(self)
         drawTrack(self, self.track)
-        #self.drawGrass()
+        drawGrass(self)
 
         #drawfloor(self)
 

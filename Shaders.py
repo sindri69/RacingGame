@@ -66,6 +66,8 @@ class Shader3D:
         self.light2DiffuseLoc = glGetUniformLocation(self.renderingProgramID, "u_light2_diffuse")
         self.light2SpecLoc = glGetUniformLocation(self.renderingProgramID, "u_light2_specular")
         self.light2AmbianceLoc = glGetUniformLocation(self.renderingProgramID, "u_light2_ambiance")
+        
+
 
     def use(self):
         try:
@@ -202,6 +204,12 @@ class SkysphereShader:
         glVertexAttribPointer(self.positionLoc, 3, GL_FLOAT, False, 5 * sizeof(GLfloat), OpenGL.GLU.ctypes.c_void_p(0))
         #glVertexAttribPointer(self.normalLoc, 3, GL_FLOAT, False, 8 * sizeof(GLfloat), OpenGL.GLU.ctypes.c_void_p(3 * sizeof(GLfloat)))
         glVertexAttribPointer(self.uvLoc, 2, GL_FLOAT, False, 5 * sizeof(GLfloat), OpenGL.GLU.ctypes.c_void_p(3 * sizeof(GLfloat)))
+    
+    def set_attribute_buffers_with_uv_cube(self, vertex_buffer_id):
+        glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_id)
+        glVertexAttribPointer(self.positionLoc, 3, GL_FLOAT, False, 8 * sizeof(GLfloat), OpenGL.GLU.ctypes.c_void_p(0))
+        #glVertexAttribPointer(self.normalLoc, 3, GL_FLOAT, False, 8 * sizeof(GLfloat), OpenGL.GLU.ctypes.c_void_p(3 * sizeof(GLfloat)))
+        glVertexAttribPointer(self.uvLoc, 2, GL_FLOAT, False, 8 * sizeof(GLfloat), OpenGL.GLU.ctypes.c_void_p(5 * sizeof(GLfloat)))
 
     def set_diffuse_tex(self, number):
         glUniform1i(self.diffuseTextureLoc, number)

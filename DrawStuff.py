@@ -48,12 +48,19 @@ def drawTree(control):
     control.model_matrix.pop_matrix()
 
 def drawGrass(control):
-    control.model_matrix.push_matrix()
-    control.model_matrix.add_scale(3.0, 0.4, 3.0)
-    control.shader.set_model_matrix(control.model_matrix.matrix)
-    control.grass.draw(control.shader)
-    control.model_matrix.pop_matrix()
-
+    for i in range(10):
+        for j in range(10):
+                control.skysphere_shader.use()
+                control.model_matrix.push_matrix()
+                control.model_matrix.add_translation(20.0, -0.2, 20.0)
+                control.model_matrix.add_scale(80.0, 0.4, 80.0)
+                control.skysphere_shader.set_model_matrix(control.model_matrix.matrix)
+                glActiveTexture(GL_TEXTURE0)
+                glBindTexture(GL_TEXTURE_2D, control.texture_id_grass)                 
+                control.skysphere_shader.set_diffuse_tex(0)
+                control.textureCube.draw(control.skysphere_shader)
+                control.shader.use()
+                control.model_matrix.pop_matrix()
 
 def drawtest(control):
     control.model_matrix.push_matrix()
