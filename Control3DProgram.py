@@ -13,7 +13,7 @@ from Shaders import *
 from Matrices import *
 from Car import *
 from obj_3D_loading import *
-from CarPhysics import *
+from CarAI import *
 from CarSimple import *
 from RaceTrack import *
 from DrawStuff import *
@@ -79,8 +79,10 @@ class GraphicsProgram3D:
 
         #could leave empty for less detail
         self.skysphere = SkySphere(256, 512)
-
-        self.track = RaceTrack(0.1, Point(0.0, 1.0, 0.0), Point(5.0, 1.0, 10.0), Point(10.0, 1.0, 10.0), Point(15.0, 1.0, 0.0))
+        bezierPoints = [Point(0.0, 1.0, 0.0), Point(50.0, 1.0, 100.0), Point(100.0, 1.0, 100.0), Point(150.0, 1.0, 0.0)]
+        self.track = RaceTrack(5, bezierPoints)
+        self.carAI = CarAI(3.0, 30.0, bezierPoints)
+        self.totalTime = 0.0
         #playerone
         self.carSimple1 = CarSimple(Vector(0,1,5))
         #playertwo
@@ -89,14 +91,12 @@ class GraphicsProgram3D:
 
     def update(self):
         delta_time = self.clock.tick() / 1000.0
+        self.totalTime += delta_time
         self.carSimpleMove1(delta_time)
         self.carSimpleMove2(delta_time)
         self.carSimple1.update(delta_time)
         self.carSimple2.update(delta_time)
-        # print("car 1 position: ",self.carSimple1.position.x, self.carSimple1.position.y, self.carSimple1.position.z)
-        # print("car 2 position: ", self.carSimple2.position.x, self.carSimple2.position.y, self.carSimple2.position.z )
-        print("car 1 head: ", self.carSimple1.carHeading)
-        print("car 2 head: ", self.carSimple2.carHeading)
+        self.carAI.update(self.totalTime)
 
     def display(self):
         glEnable(GL_DEPTH_TEST)  ### --- NEED THIS FOR NORMAL 3D BUT MANY EFFECTS BETTER WITH glDisable(GL_DEPTH_TEST) ... try it! --- ###
@@ -147,6 +147,7 @@ class GraphicsProgram3D:
         #cube for now, will be a car later
         drawCar1(self)
         drawCar2(self)
+        drawCarAI(self)
         drawTree(self)
         drawTrack(self, self.track)
 
@@ -196,6 +197,7 @@ class GraphicsProgram3D:
         
         drawCar2(self)
         drawCar1(self)
+        drawCarAI(self)
         drawTree(self)
         drawTrack(self, self.track)
         #self.drawGrass()
@@ -214,39 +216,39 @@ class GraphicsProgram3D:
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    print("Quitting!")
+                    # print("Quitting!")
                     exiting = True
                 elif event.type == pygame.KEYDOWN:
                     if event.key == K_ESCAPE:
-                        print("Escaping!")
+                        # print("Escaping!")
                         exiting = True
 
                     if event.key == K_w:
                         self.w_key_down = True
-                       # print("w key down")
+                    #    # print("w key down")
                     elif event.key == K_s:
                         self.s_key_down = True
-                      #  print("s key down")
+                    #   #  print("s key down")
                     elif event.key == K_a:
                         self.a_key_down = True
-                       # print("a key down")
+                    #    # print("a key down")
                     elif event.key == K_d:
                         self.d_key_down = True
-                        #print("d key down")
+                        # #print("d key down")
                     elif event.key == K_LSHIFT:
                         self.LSHIFT_key_down = True
                     elif event.key == K_UP:
                         self.up_key_down = True
-                       # print("up key down")
+                    #    # print("up key down")
                     elif event.key == K_DOWN:
                         self.down_key_down = True
-                       # print("down key down")
+                    #    # print("down key down")
                     elif event.key == K_LEFT:
                         self.left_key_down = True
-                        #print("left key down")
+                        # #print("left key down")
                     elif event.key == K_RIGHT:
                         self.right_key_down = True
-                       # print("right key down")
+                    #    # print("right key down")
 
                 elif event.type == pygame.KEYUP:
 
@@ -294,18 +296,18 @@ class GraphicsProgram3D:
         #playerone
         if self.w_key_down:
             self.carSimple1.carSpeed += 10 * delta_time
-            print("car1 w key down")
+            # print("car1 w key down")
         if self.d_key_down:
             self.carSimple1.steerAngle -= (pi / 5 )* delta_time
-            print("car1 d key down")
+            # print("car1 d key down")
         if self.a_key_down:
             self.carSimple1.steerAngle += (pi / 5 )* delta_time
-            print("car1 a key down")
+            # print("car1 a key down")
         if not self.a_key_down and not self.d_key_down:
             self.carSimple1.steerAngle = 0
         if self.s_key_down:
             self.carSimple1.carSpeed -= 10 * delta_time
-            print("car1 s key down")
+            # print("car1 s key down")
       
         self.carSimple1.steerAngle = max(-self.carSimple1.maxSteerAngle, min(self.carSimple1.steerAngle, self.carSimple1.maxSteerAngle))
      
@@ -313,18 +315,18 @@ class GraphicsProgram3D:
         #playertwo
         if self.up_key_down:
             self.carSimple2.carSpeed += 10 * delta_time
-            print("car2 up key down")
+            # print("car2 up key down")
         if self.right_key_down:
             self.carSimple2.steerAngle -= (pi / 5 )* delta_time
-            print("car2 right key down")
+            # print("car2 right key down")
         if self.left_key_down:
             self.carSimple2.steerAngle += (pi / 5 )* delta_time
-            print("car2 left key down")
+            # print("car2 left key down")
         if not self.left_key_down and not self.right_key_down:
             self.carSimple2.steerAngle = 0
         if self.down_key_down:
             self.carSimple2.carSpeed -= 10 * delta_time
-            print("car2 down key down")
+            # print("car2 down key down")
       
         self.carSimple2.steerAngle = max(-self.carSimple2.maxSteerAngle, min(self.carSimple2.steerAngle, self.carSimple2.maxSteerAngle))
 

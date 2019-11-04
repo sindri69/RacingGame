@@ -9,35 +9,35 @@ import numpy
 
 
 class RaceTrack:
-    def __init__(self, halfwidth, p0, p1, p2, p3):
+    def __init__(self, halfwidth, p):
         t = 0.0
         norm = Point(0.0, 1.0, 0.0)
         self.vertexCount = 0
         vertex_arr = []
-        pY = p0.y
-        pX = pow((1-t), 3) * p0.x + 3 * t * pow((1-t), 2) * p1.x + 3 * pow(t, 2) * (1 - t) * p2.x + pow(t, 3) * p3.x
-        pZ = pow((1-t), 3) * p0.z + 3 * t * pow((1-t), 2) * p1.z + 3 * pow(t, 2) * (1 - t) * p2.z + pow(t, 3) * p3.z
-        u = pow((1-t), 2) * (p1.x - p0.x) + 2 * t * (1-t) * (p2.x - p1.x) + pow(t, 2) * (p3.x - p2.x)
-        v = pow((1-t), 2) * (p1.z - p0.z) + 2 * t * (1-t) * (p2.z - p1.z) + pow(t, 2) * (p3.z - p2.z)
+        pY = p[0].y
+        pX = pow((1-t), 3) * p[0].x + 3 * t * pow((1-t), 2) * p[1].x + 3 * pow(t, 2) * (1 - t) * p[2].x + pow(t, 3) * p[3].x
+        pZ = pow((1-t), 3) * p[0].z + 3 * t * pow((1-t), 2) * p[1].z + 3 * pow(t, 2) * (1 - t) * p[2].z + pow(t, 3) * p[3].z
+        u = pow((1-t), 2) * (p[1].x - p[0].x) + 2 * t * (1-t) * (p[2].x - p[1].x) + pow(t, 2) * (p[3].x - p[2].x)
+        v = pow((1-t), 2) * (p[1].z - p[0].z) + 2 * t * (1-t) * (p[2].z - p[1].z) + pow(t, 2) * (p[3].z - p[2].z)
         angle = atan2(u, v)
         pOutX = pX - cos(angle) * halfwidth
         pInX = pX + cos(angle) * halfwidth
         pOutZ = pZ + sin(angle) * halfwidth 
         pInZ = pZ - sin(angle) * halfwidth 
         while t < 1.0:
-            pX = pow((1-t), 3) * p0.x + 3 * t * pow((1-t), 2) * p1.x + 3 * pow(t, 2) * (1 - t) * p2.x + pow(t, 3) * p3.x
-            pZ = pow((1-t), 3) * p0.z + 3 * t * pow((1-t), 2) * p1.z + 3 * pow(t, 2) * (1 - t) * p2.z + pow(t, 3) * p3.z
-            u = pow((1-t), 2) * (p1.x - p0.x) + 2 * t * (1-t) * (p2.x - p1.x) + pow(t, 2) * (p3.x - p2.x)
-            v = pow((1-t), 2) * (p1.z - p0.z) + 2 * t * (1-t) * (p2.z - p1.z) + pow(t, 2) * (p3.z - p2.z)
+            pX = pow((1-t), 3) * p[0].x + 3 * t * pow((1-t), 2) * p[1].x + 3 * pow(t, 2) * (1 - t) * p[2].x + pow(t, 3) * p[3].x
+            pZ = pow((1-t), 3) * p[0].z + 3 * t * pow((1-t), 2) * p[1].z + 3 * pow(t, 2) * (1 - t) * p[2].z + pow(t, 3) * p[3].z
+            u = pow((1-t), 2) * (p[1].x - p[0].x) + 2 * t * (1-t) * (p[2].x - p[1].x) + pow(t, 2) * (p[3].x - p[2].x)
+            v = pow((1-t), 2) * (p[1].z - p[0].z) + 2 * t * (1-t) * (p[2].z - p[1].z) + pow(t, 2) * (p[3].z - p[2].z)
             angle = atan2(u, v)
             pOutXnew = pX - cos(angle) * halfwidth
             pInXnew = pX + cos(angle) * halfwidth
             pOutZnew = pZ + sin(angle) * halfwidth 
             pInZnew = pZ - sin(angle) * halfwidth
-            print(pOutX, pOutZ)
-            print(pInX, pInZ)
-            print(pOutXnew, pOutZnew)
-            print(pInXnew, pInZnew)
+            # print(pOutX, pOutZ)
+            # print(pInX, pInZ)
+            # print(pOutXnew, pOutZnew)
+            # print(pInXnew, pInZnew)
             vertex_arr.extend([pOutX, pY, pOutZ, norm.x, norm.y, norm.z]) 
             vertex_arr.extend([pInX, pY, pInZ, norm.x, norm.y, norm.z]) 
             vertex_arr.extend([pOutXnew, pY, pOutZnew, norm.x, norm.y, norm.z]) 
