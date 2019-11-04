@@ -114,30 +114,8 @@ class GraphicsProgram3D:
         self.view_matrix.look(Point(self.carSimple2.position.x + (sin(-self.carSimple2.carHeading) * 3), self.carSimple2.position.y + 1, self.carSimple2.position.z - (cos(-self.carSimple2.carHeading) * 3)), Point(self.carSimple2.position.x, self.carSimple2.position.y, self.carSimple2.position.z), Vector(0, 1, 0))
         
         ##important to draw skysphere first
-        glDisable(GL_DEPTH_TEST)
-        self.skysphere_shader.use()
-        self.skysphere_shader.set_projection_matrix(self.projection_matrix.get_matrix())
-        self.skysphere_shader.set_view_matrix(self.view_matrix.get_matrix())
+        self.displaySkysphere()
 
-        glActiveTexture(GL_TEXTURE0)
-        glBindTexture(GL_TEXTURE_2D, self.texture_id_skysphere)
-        self.skysphere_shader.set_diffuse_tex(0)
-        #self.skysphere_shader.set_alpha_tex(None)
-
-        self.skysphere_shader.set_opacity(1.0)
-
-        self.model_matrix.push_matrix()
-        self.model_matrix.add_translation(self.view_matrix.eye.x, self.view_matrix.eye.y, self.view_matrix.eye.z)
-        self.skysphere_shader.set_model_matrix(self.model_matrix.matrix)
-        
-        self.skysphere.draw(self.skysphere_shader)
-
-        self.model_matrix.pop_matrix()
-        
-        glEnable(GL_DEPTH_TEST)
-
-        glClear(GL_DEPTH_BUFFER_BIT) 
-        
         self.shader.use()
         #self.cube.set_vertices(self.shaderself.shader)
         self.shader.set_view_matrix(self.view_matrix.get_matrix())
@@ -163,29 +141,7 @@ class GraphicsProgram3D:
         self.view_matrix.look(Point(self.carSimple1.position.x + (sin(-self.carSimple1.carHeading) * 3), (self.carSimple1.position.y + 1), self.carSimple1.position.z - (cos(-self.carSimple1.carHeading) * 3) ), Point(self.carSimple1.position.x, self.carSimple1.position.y, self.carSimple1.position.z), Vector(0, 1, 0))
         
         ##important to draw skysphere first
-        glDisable(GL_DEPTH_TEST)
-        self.skysphere_shader.use()
-        self.skysphere_shader.set_projection_matrix(self.projection_matrix.get_matrix())
-        self.skysphere_shader.set_view_matrix(self.view_matrix.get_matrix())
-
-        glActiveTexture(GL_TEXTURE0)
-        glBindTexture(GL_TEXTURE_2D, self.texture_id_skysphere)
-        self.skysphere_shader.set_diffuse_tex(0)
-        #self.skysphere_shader.set_alpha_tex(None)
-
-        self.skysphere_shader.set_opacity(1.0)
-
-        self.model_matrix.push_matrix()
-        self.model_matrix.add_translation(self.view_matrix.eye.x, self.view_matrix.eye.y, self.view_matrix.eye.z)
-        self.skysphere_shader.set_model_matrix(self.model_matrix.matrix)
-        
-        self.skysphere.draw(self.skysphere_shader)
-
-        self.model_matrix.pop_matrix()
-        
-        glEnable(GL_DEPTH_TEST)
-
-        glClear(GL_DEPTH_BUFFER_BIT) 
+        self.displaySkysphere()
         
         self.shader.use()
         #self.cube.set_vertices(self.shaderself.shader)
@@ -329,6 +285,31 @@ class GraphicsProgram3D:
                 print(self.carSimple2.carSpeed)
       
         self.carSimple2.steerAngle = max(-self.carSimple2.maxSteerAngle, min(self.carSimple2.steerAngle, self.carSimple2.maxSteerAngle))
+    
+    def displaySkysphere(self):
+        glDisable(GL_DEPTH_TEST)
+        self.skysphere_shader.use()
+        self.skysphere_shader.set_projection_matrix(self.projection_matrix.get_matrix())
+        self.skysphere_shader.set_view_matrix(self.view_matrix.get_matrix())
+
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D, self.texture_id_skysphere)
+        self.skysphere_shader.set_diffuse_tex(0)
+        #self.skysphere_shader.set_alpha_tex(None)
+
+        self.skysphere_shader.set_opacity(1.0)
+
+        self.model_matrix.push_matrix()
+        self.model_matrix.add_translation(self.view_matrix.eye.x, self.view_matrix.eye.y, self.view_matrix.eye.z)
+        self.skysphere_shader.set_model_matrix(self.model_matrix.matrix)
+        
+        self.skysphere.draw(self.skysphere_shader)
+
+        self.model_matrix.pop_matrix()
+        
+        glEnable(GL_DEPTH_TEST)
+
+        glClear(GL_DEPTH_BUFFER_BIT) 
 
 if __name__ == "__main__":
     GraphicsProgram3D().start()
