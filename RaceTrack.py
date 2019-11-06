@@ -13,6 +13,7 @@ class RaceTrack:
         t = 0.0
         norm = Point(0.0, 1.0, 0.0)
         self.vertexCount = 0
+        self.pathNum = (len(p) - 4) // 2
         count = 0
         left = True
         dt = 1 / vertCount
@@ -67,6 +68,49 @@ class RaceTrack:
                 left = not left
             if count % gateCount == 0:
                 self.gateArr.append((Point(pX, pY, pZ), atan2(v, u)))
+        
+        for i in range(self.pathNum):
+            t = 0
+            while t < 1.0:
+                p0 = p[i * 2 + 3]
+                p1 = p0 + (p0 - p[i * 2 + 2])
+                p2 = p[i * 2 + 4]
+                p3 = p[i * 2 + 5]
+                pX = pow((1-t), 3) * p0.x + 3 * t * pow((1-t), 2) * p1.x + 3 * pow(t, 2) * (1 - t) * p2.x + pow(t, 3) * p3.x
+                pZ = pow((1-t), 3) * p0.z + 3 * t * pow((1-t), 2) * p1.z + 3 * pow(t, 2) * (1 - t) * p2.z + pow(t, 3) * p3.z
+                self.centerArr.append(Point(pX, pY, pZ))
+                u = pow((1-t), 2) * (p1.x - p0.x) + 2 * t * (1-t) * (p2.x - p1.x) + pow(t, 2) * (p3.x - p2.x)
+                v = pow((1-t), 2) * (p1.z - p0.z) + 2 * t * (1-t) * (p2.z - p1.z) + pow(t, 2) * (p3.z - p2.z)
+                angle = atan2(u, v)
+                pOutXnew = pX - cos(angle) * halfwidth
+                pInXnew = pX + cos(angle) * halfwidth
+                pOutZnew = pZ + sin(angle) * halfwidth 
+                pInZnew = pZ - sin(angle) * halfwidth
+                vertex_arr.extend([pOutX, pY, pOutZ, norm.x, norm.y, norm.z]) 
+                vertex_arr.extend([pInX, pY, pInZ, norm.x, norm.y, norm.z]) 
+                vertex_arr.extend([pOutXnew, pY, pOutZnew, norm.x, norm.y, norm.z]) 
+                vertex_arr.extend([pInX, pY, pInZ, norm.x, norm.y, norm.z]) 
+                vertex_arr.extend([pOutXnew, pY, pOutZnew, norm.x, norm.y, norm.z]) 
+                vertex_arr.extend([pInXnew, pY, pInZnew, norm.x, norm.y, norm.z])
+                self.vertexCount += 6
+                pOutX = pOutXnew 
+                pOutZ = pOutZnew 
+                pInX = pInXnew 
+                pInZ = pInZnew 
+                t += dt
+                count += 1
+                if count % treeCount == 0:
+                    if left:
+                        treePX = pX - cos(angle) * halfwidth * 2
+                        treePZ = pZ + sin(angle) * halfwidth * 2
+                    else:
+                        treePX = pX + cos(angle) * halfwidth * 2
+                        treePZ = pZ - sin(angle) * halfwidth * 2
+
+                    self.treeArr.append(Point(treePX, pY, treePZ))
+                    left = not left
+                if count % gateCount == 0:
+                    self.gateArr.append((Point(pX, pY, pZ), atan2(v, u)))
 
         self.vertex_buffer_id = glGenBuffers(1)        
         glBindBuffer(GL_ARRAY_BUFFER, self.vertex_buffer_id)

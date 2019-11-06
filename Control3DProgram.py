@@ -88,9 +88,9 @@ class GraphicsProgram3D:
         self.skysphere = SkySphere(256, 512)
         self.onRoad1 = False
         self.onRoad2 = False
-        self.bezierPoints = [Point(0.0, 1.0, 0.0), Point(50.0, 1.0, 100.0), Point(100.0, 1.0, 100.0), Point(150.0, 1.0, 0.0)]
+        self.bezierPoints = [Point(0.0, 1.0, 0.0), Point(10.0, 1.0, 25.0), Point(10.0, 1.0, 50.0), Point(-10.0, 1.0, 100.0), Point(10.0, 1.0, 150.0), Point(-10.0, 1.0, 200.0), Point(10.0, 1.0, 250.0), Point(-10.0, 1.0, 300.0), Point(10.0, 1.0, 350.0), Point(-10.0, 1.0, 400.0)]
         # bezierPoints2 = [Point(150.0, 1.0, 0.0), Point(50.0, 1.0, -100.0), Point(50.0, 1.0, -100.0), Point(0.0, 1.0, 0.0)]
-        self.track = RaceTrack(10, self.bezierPoints, 1000, 100, 300)
+        self.track = RaceTrack(10, self.bezierPoints, 30, 30, 60)
         # self.track2 = RaceTrack(10, bezierPoints2)
         self.carAI = CarAI(3.0, 10.0, self.bezierPoints)
         self.totalTime = 0.0
@@ -324,10 +324,10 @@ class GraphicsProgram3D:
         glClear(GL_DEPTH_BUFFER_BIT) 
     
     def gameOverPrompt(self):
-        if (self.carSimple1.position - self.bezierPoints[3]).__len__() < 2:
+        if (self.carSimple1.position - self.bezierPoints[-1]).__len__() < 2:
             winner = "Player one"
             self.gameOver = True
-        elif (self.carSimple2.position - self.bezierPoints[3]).__len__() < 2:
+        elif (self.carSimple2.position - self.bezierPoints[-1]).__len__() < 2:
             winner = "Player two"
             self.gameOver = True
         elif self.totalTime > 10:

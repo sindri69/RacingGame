@@ -45,9 +45,8 @@ def drawGrass(control, carsimple):
     glBindTexture(GL_TEXTURE_2D, control.texture_id_grass)                 
     control.skysphere_shader.set_diffuse_tex(0)
     control.textureCube.set_uv(control.skysphere_shader)
-    for i in range(-10, 10):
-        for j in range(-10, 10):
-                
+    for i in range(-6, 7):
+        for j in range(-6, 7):
                 control.model_matrix.push_matrix()
                 control.model_matrix.add_translation(i*12.0 + 12*floor(carsimple.position.x /12.0), -0.2, j*12.0 + 12*floor(carsimple.position.z/12.0))
                 control.model_matrix.add_scale(12.0, 0.4, 12.0)
