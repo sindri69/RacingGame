@@ -11,7 +11,6 @@ import time
 
 from Shaders import *
 from Matrices import *
-from Car import *
 from obj_3D_loading import *
 from CarAI import *
 from CarSimple import *
@@ -50,6 +49,10 @@ class GraphicsProgram3D:
         self.tree = load_obj_file(sys.path[0] + "/models" , "birch_tree.obj")
         #self.grass = load_obj_file(sys.path[0] + "/models" , "Grass.obj")
         self.test = load_obj_file(sys.path[0] + "/models" , "test2.obj")
+        self.car_model = load_obj_file(sys.path[0] + "/models" , "shelby.obj")
+        self.car_model2 = load_obj_file(sys.path[0] + "/models" , "shelby2.obj")
+        self.car_model3 = load_obj_file(sys.path[0] + "/models" , "shelby3.obj")
+        self.gate = load_obj_file(sys.path[0] + "/models" , "gate.obj")
 
         playsound("./sounds/oh_yeah.mp3", False)
 
@@ -71,10 +74,10 @@ class GraphicsProgram3D:
         self.left_key_down = False
         self.right_key_down = False
 
-        self.shader.set_light_position(Point(10.0, 10.0, 5.0))
-        self.shader.set_light_specular(0.1, 0.8, 0.1)
+        self.shader.set_light_position(Point(0.0, 50.0, 100.0))
+        self.shader.set_light_specular(0.1, 0.1, 0.1)
         self.shader.set_light_diffuse(1.0, 1.0, 1.0)
-        self.shader.set_light_ambiance(0.0, 0.0, 0.0)
+        self.shader.set_light_ambiance(0.1, 0.1, 0.1)
 
         ##textures
         self.texture_id_skysphere = self.load_texture(sys.path[0] + "/textures/skysphere.jpg")
@@ -83,15 +86,22 @@ class GraphicsProgram3D:
 
         #could leave empty for less detail
         self.skysphere = SkySphere(256, 512)
-        bezierPoints = [Point(0.0, 1.0, 0.0), Point(50.0, 1.0, 100.0), Point(100.0, 1.0, 100.0), Point(150.0, 1.0, 0.0)]
-        self.track = RaceTrack(5, bezierPoints)
-        self.carAI = CarAI(3.0, 30.0, bezierPoints)
+        self.onRoad1 = False
+        self.onRoad2 = False
+        self.bezierPoints = [Point(0.0, 1.0, 0.0), Point(50.0, 1.0, 100.0), Point(100.0, 1.0, 100.0), Point(150.0, 1.0, 0.0)]
+        # bezierPoints2 = [Point(150.0, 1.0, 0.0), Point(50.0, 1.0, -100.0), Point(50.0, 1.0, -100.0), Point(0.0, 1.0, 0.0)]
+        self.track = RaceTrack(10, self.bezierPoints, 1000, 100, 300)
+        # self.track2 = RaceTrack(10, bezierPoints2)
+        self.carAI = CarAI(3.0, 10.0, self.bezierPoints)
         self.totalTime = 0.0
         #playerone
-        self.carSimple1 = CarSimple(Vector(0,1,5))
+        self.carSimple1 = CarSimple(Vector(0,1.2,5))
         #playertwo
-        self.carSimple2 = CarSimple(Vector(0,1,0))
+        self.carSimple2 = CarSimple(Vector(0,1.2,0))
         self.white_background = False
+
+        self.gameOver = False
+        self.winner = ''
 
     def update(self):
         delta_time = self.clock.tick() / 1000.0
@@ -100,7 +110,13 @@ class GraphicsProgram3D:
         self.carSimpleMove2(delta_time)
         self.carSimple1.update(delta_time)
         self.carSimple2.update(delta_time)
+        self.onRoad1 = self.track.grass(self.carSimple1)
+        self.onRoad2 = self.track.grass(self.carSimple2)
+        print("Road1",self.onRoad1)
+        print("Road2",self.onRoad2)
         self.carAI.update(self.totalTime)
+        self.gameOverPrompt()
+        
 
     def display(self):
         glEnable(GL_DEPTH_TEST)  ### --- NEED THIS FOR NORMAL 3D BUT MANY EFFECTS BETTER WITH glDisable(GL_DEPTH_TEST) ... try it! --- ###
@@ -115,7 +131,7 @@ class GraphicsProgram3D:
         glViewport(0, 0, 1200, 450)
 
         self.model_matrix.load_identity()
-        self.view_matrix.look(Point(self.carSimple2.position.x + (sin(-self.carSimple2.carHeading) * 3), self.carSimple2.position.y + 1, self.carSimple2.position.z - (cos(-self.carSimple2.carHeading) * 3)), Point(self.carSimple2.position.x, self.carSimple2.position.y, self.carSimple2.position.z), Vector(0, 1, 0))
+        self.view_matrix.look(Point(self.carSimple2.position.x + (sin(-self.carSimple2.carHeading) * 3.5), self.carSimple2.position.y + 2, self.carSimple2.position.z - (cos(-self.carSimple2.carHeading) * 3.5)), Point(self.carSimple2.position.x, self.carSimple2.position.y, self.carSimple2.position.z), Vector(0, 1, 0))
         
         ##important to draw skysphere first
         self.displaySkysphere()
@@ -130,10 +146,10 @@ class GraphicsProgram3D:
         drawCar1(self)
         drawCar2(self)
         drawCarAI(self)
-        drawTree(self)
+        drawForrest(self)
         drawTrack(self, self.track)
-
-        drawGrass(self)
+        drawGates(self)
+        drawGrass(self, self.carSimple2)
 
         #drawfloor(self)       
        
@@ -142,7 +158,7 @@ class GraphicsProgram3D:
         glViewport(0, 450, 1200, 450)
 
         self.model_matrix.load_identity()
-        self.view_matrix.look(Point(self.carSimple1.position.x + (sin(-self.carSimple1.carHeading) * 3), (self.carSimple1.position.y + 1), self.carSimple1.position.z - (cos(-self.carSimple1.carHeading) * 3) ), Point(self.carSimple1.position.x, self.carSimple1.position.y, self.carSimple1.position.z), Vector(0, 1, 0))
+        self.view_matrix.look(Point(self.carSimple1.position.x + (sin(-self.carSimple1.carHeading) * 3.5), (self.carSimple1.position.y + 2), self.carSimple1.position.z - (cos(-self.carSimple1.carHeading) * 3.5) ), Point(self.carSimple1.position.x, self.carSimple1.position.y, self.carSimple1.position.z), Vector(0, 1, 0))
         
         ##important to draw skysphere first
         self.displaySkysphere()
@@ -158,9 +174,11 @@ class GraphicsProgram3D:
         drawCar2(self)
         drawCar1(self)
         drawCarAI(self)
+        drawForrest(self)
         drawTree(self)
         drawTrack(self, self.track)
-        drawGrass(self)
+        drawGates(self)
+        drawGrass(self, self.carSimple1)
 
         #drawfloor(self)
 
@@ -176,39 +194,30 @@ class GraphicsProgram3D:
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    # print("Quitting!")
                     exiting = True
                 elif event.type == pygame.KEYDOWN:
                     if event.key == K_ESCAPE:
-                        # print("Escaping!")
                         exiting = True
-
                     if event.key == K_w:
                         self.w_key_down = True
-                    #    # print("w key down")
                     elif event.key == K_s:
                         self.s_key_down = True
-                    #   #  print("s key down")
                     elif event.key == K_a:
                         self.a_key_down = True
-                    #    # print("a key down")
                     elif event.key == K_d:
                         self.d_key_down = True
-                        # #print("d key down")
                     elif event.key == K_LSHIFT:
                         self.LSHIFT_key_down = True
                     elif event.key == K_UP:
                         self.up_key_down = True
-                    #    # print("up key down")
                     elif event.key == K_DOWN:
                         self.down_key_down = True
-                    #    # print("down key down")
                     elif event.key == K_LEFT:
                         self.left_key_down = True
-                        # #print("left key down")
                     elif event.key == K_RIGHT:
                         self.right_key_down = True
-                    #    # print("right key down")
+                    elif event.key == K_SPACE and gameOver:
+                        self.init()
 
                 elif event.type == pygame.KEYUP:
 
@@ -257,7 +266,6 @@ class GraphicsProgram3D:
         if self.w_key_down:
             if self.carSimple1.carSpeed < self.carSimple1.maxSpeed:
                 self.carSimple1.carSpeed += 10 * delta_time
-                print(self.carSimple1.carSpeed)
         if self.d_key_down:
             self.carSimple1.steerAngle -= (pi / 5 )* delta_time
         if self.a_key_down:
@@ -267,16 +275,15 @@ class GraphicsProgram3D:
         if self.s_key_down:
             if self.carSimple1.carSpeed > self.carSimple1.maxBackSpeed:
                 self.carSimple1.carSpeed -= 10 * delta_time
-                print(self.carSimple1.carSpeed)
-      
         self.carSimple1.steerAngle = max(-self.carSimple1.maxSteerAngle, min(self.carSimple1.steerAngle, self.carSimple1.maxSteerAngle))
-     
+        if not self.onRoad1 and self.carSimple1.carSpeed >= 20:
+            self.carSimple1.carSpeed -= 50 * delta_time
+            print(self.carSimple1.carSpeed)
     def carSimpleMove2(self, delta_time): 
         #playertwo
         if self.up_key_down:
             if self.carSimple2.carSpeed < self.carSimple2.maxSpeed:
                 self.carSimple2.carSpeed += 10 * delta_time
-                print(self.carSimple2.carSpeed)
         if self.right_key_down:
             self.carSimple2.steerAngle -= (pi / 5 )* delta_time
         if self.left_key_down:
@@ -286,7 +293,8 @@ class GraphicsProgram3D:
         if self.down_key_down:
             if self.carSimple2.carSpeed > self.carSimple2.maxBackSpeed:
                 self.carSimple2.carSpeed -= 10 * delta_time
-                print(self.carSimple2.carSpeed)
+        if not self.onRoad2 and self.carSimple2.carSpeed >= 20:
+            self.carSimple2.carSpeed -= 20 * delta_time
       
         self.carSimple2.steerAngle = max(-self.carSimple2.maxSteerAngle, min(self.carSimple2.steerAngle, self.carSimple2.maxSteerAngle))
     
@@ -314,6 +322,19 @@ class GraphicsProgram3D:
         glEnable(GL_DEPTH_TEST)
 
         glClear(GL_DEPTH_BUFFER_BIT) 
+    
+    def gameOverPrompt(self):
+        if (self.carSimple1.position - self.bezierPoints[3]).__len__() < 2:
+            winner = "Player one"
+            self.gameOver = True
+        elif (self.carSimple2.position - self.bezierPoints[3]).__len__() < 2:
+            winner = "Player two"
+            self.gameOver = True
+        elif self.totalTime > 10:
+            winner = "the AI, you suck"
+            self.gameOver = True
+        if self.gameOver:
+            print("The game is over and the winner was ", winner, "! If you want to play again press the spacebar!")
 
 if __name__ == "__main__":
     GraphicsProgram3D().start()

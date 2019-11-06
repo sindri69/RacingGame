@@ -196,58 +196,54 @@ class TextureCube:
                             1.0, 0.0, 0.0,
                             1.0, 0.0, 0.0]
         self.uv_array = [0.0, 0.0, 
-                         0.0, 1.0, 
-                         1.0, 1.0, 
                          1.0, 0.0, 
-                         0.0, 0.0, 
-                         0.0, 1.0, 
                          1.0, 1.0, 
-                         1.0, 0.0,
-                         0.0, 0.0, 
                          0.0, 1.0, 
-                         1.0, 1.0, 
-                         1.0, 0.0,
                          0.0, 0.0, 
-                         0.0, 1.0, 
+                         1.0, 0.0, 
                          1.0, 1.0, 
-                         1.0, 0.0,
+                         0.0, 1.0,
                          0.0, 0.0, 
-                         0.0, 1.0, 
+                         1.0, 0.0, 
                          1.0, 1.0, 
-                         1.0, 0.0,
+                         0.0, 1.0,
                          0.0, 0.0, 
-                         0.0, 1.0, 
+                         1.0, 0.0, 
                          1.0, 1.0, 
-                         1.0, 0.0]
+                         0.0, 1.0,
+                         0.0, 0.0, 
+                         1.0, 0.0, 
+                         1.0, 1.0, 
+                         0.0, 1.0,
+                         0.0, 0.0, 
+                         1.0, 0.0, 
+                         1.0, 1.0, 
+                         0.0, 1.0]
         arr = []
-        for i in range(0, 72, 3):
-            arr.append(self.position_array[0 + i])
-            arr.append(self.position_array[1 + i])
-            arr.append(self.position_array[2 + i])
-            arr.append(self.normal_array[0+ i])
-            arr.append(self.normal_array[1 + i])
-            arr.append(self.normal_array[2+ i])
-        for j in range(0, 48, 2):
-            arr.append(self.uv_array[0+ j])
-            arr.append(self.uv_array[1+ j])
+        for i in range(24):
+            arr.append(self.position_array[i*3])
+            arr.append(self.position_array[1 + i*3])
+            arr.append(self.position_array[2 + i*3])
+            arr.append(self.normal_array[i*3])
+            arr.append(self.normal_array[1 + i*3])
+            arr.append(self.normal_array[2+ i*3])
+            arr.append(self.uv_array[i*2])
+            arr.append(self.uv_array[1+ i*2])
         
         self.vertex_buffer_id = glGenBuffers(1)
         glBindBuffer(GL_ARRAY_BUFFER, self.vertex_buffer_id)
         glBufferData(GL_ARRAY_BUFFER, numpy.array(arr, dtype='float32'), GL_STATIC_DRAW)
         glBindBuffer(GL_ARRAY_BUFFER, 0)
         arr = None
-
-    
-    def draw(self, shader):
-            
+    def set_uv(self, shader):    
         shader.set_attribute_buffers_with_uv_cube(self.vertex_buffer_id)
-        
-        glDrawArrays(GL_TRIANGLE_FAN, 0, 4)
-        glDrawArrays(GL_TRIANGLE_FAN, 4, 4)
+    def draw(self):
+        # glDrawArrays(GL_TRIANGLE_FAN, 0, 4)
+        # glDrawArrays(GL_TRIANGLE_FAN, 4, 4)
         glDrawArrays(GL_TRIANGLE_FAN, 8, 4)
-        glDrawArrays(GL_TRIANGLE_FAN, 12, 4)
-        glDrawArrays(GL_TRIANGLE_FAN, 16, 4)
-        glDrawArrays(GL_TRIANGLE_FAN, 20, 4)
+        # glDrawArrays(GL_TRIANGLE_FAN, 12, 4)
+        # glDrawArrays(GL_TRIANGLE_FAN, 16, 4)
+        # glDrawArrays(GL_TRIANGLE_FAN, 20, 4)
         glBindBuffer(GL_ARRAY_BUFFER, 0)
 
 class Sphere:
