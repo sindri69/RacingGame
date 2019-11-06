@@ -48,7 +48,7 @@ class GraphicsProgram3D:
 
         self.tree = load_obj_file(sys.path[0] + "/models" , "birch_tree.obj")
         #self.grass = load_obj_file(sys.path[0] + "/models" , "Grass.obj")
-        self.test = load_obj_file(sys.path[0] + "/models" , "test2.obj")
+       # self.test = load_obj_file(sys.path[0] + "/models" , "test2.obj")
         self.car_model = load_obj_file(sys.path[0] + "/models" , "shelby.obj")
         self.car_model2 = load_obj_file(sys.path[0] + "/models" , "shelby2.obj")
         self.car_model3 = load_obj_file(sys.path[0] + "/models" , "shelby3.obj")
