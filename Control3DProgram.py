@@ -54,7 +54,7 @@ class GraphicsProgram3D:
         self.car_model3 = load_obj_file(sys.path[0] + "/models" , "shelby3.obj")
         self.gate = load_obj_file(sys.path[0] + "/models" , "gate.obj")
 
-        playsound("./sounds/oh_yeah.mp3", False)
+        #playsound("./sounds/oh_yeah.mp3", False)
 
         self.clock = pygame.time.Clock()
         self.clock.tick()

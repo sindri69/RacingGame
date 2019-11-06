@@ -9,6 +9,7 @@ import numpy
 
 
 class RaceTrack:
+     #creates a racetrack from arbitarily big array of bezier and calculates positions of gates and trees
     def __init__(self, halfwidth, p, vertCount, treeCount, gateCount ):
         t = 0.0
         norm = Point(0.0, 1.0, 0.0)
@@ -123,7 +124,7 @@ class RaceTrack:
         for i in range(0, self.vertexCount, 3):
             glDrawArrays(GL_TRIANGLES, i, 3)
         glBindBuffer(GL_ARRAY_BUFFER, 0)
-    def grass(self, car):
+    def grass(self, car): # checks if car is on the road
         for p in self.centerArr:
             tmp = p - car.position
             if tmp.__len__() < self.halfwidth:
