@@ -92,16 +92,18 @@ class GraphicsProgram3D:
         # bezierPoints2 = [Point(150.0, 1.0, 0.0), Point(50.0, 1.0, -100.0), Point(50.0, 1.0, -100.0), Point(0.0, 1.0, 0.0)]
         self.track = RaceTrack(10, self.bezierPoints, 30, 30, 60)
         # self.track2 = RaceTrack(10, bezierPoints2)
-        self.carAI = CarAI(3.0, 10.0, self.bezierPoints)
+        self.carAI = CarAI(3.0, 15.0, self.bezierPoints)
         self.totalTime = 0.0
         #playerone
-        self.carSimple1 = CarSimple(Vector(0,1.2,5))
+        self.carSimple1 = CarSimple(Vector(-2,1.2,5))
         #playertwo
-        self.carSimple2 = CarSimple(Vector(0,1.2,0))
+        self.carSimple2 = CarSimple(Vector(2,1.2,5))
         self.white_background = False
 
         self.gameOver = False
         self.winner = ''
+        self.messageNotPrinted = True
+
 
     def update(self):
         delta_time = self.clock.tick() / 1000.0
@@ -112,8 +114,6 @@ class GraphicsProgram3D:
         self.carSimple2.update(delta_time)
         self.onRoad1 = self.track.grass(self.carSimple1)
         self.onRoad2 = self.track.grass(self.carSimple2)
-        print("Road1",self.onRoad1)
-        print("Road2",self.onRoad2)
         self.carAI.update(self.totalTime)
         self.gameOverPrompt()
         
@@ -216,8 +216,8 @@ class GraphicsProgram3D:
                         self.left_key_down = True
                     elif event.key == K_RIGHT:
                         self.right_key_down = True
-                    elif event.key == K_SPACE and gameOver:
-                        self.init()
+                    elif event.key == K_SPACE and self.gameOver:
+                        self.restartGame()
 
                 elif event.type == pygame.KEYUP:
 
@@ -324,17 +324,31 @@ class GraphicsProgram3D:
         glClear(GL_DEPTH_BUFFER_BIT) 
     
     def gameOverPrompt(self):
+        if self.gameOver and self.messageNotPrinted:
+            print("The game is over and the winner was ", self.winner, "! If you want to play again press the spacebar!")
+            self.messageNotPrinted = False
         if (self.carSimple1.position - self.bezierPoints[-1]).__len__() < 2:
-            winner = "Player one"
+            self.winner = "Player one"
             self.gameOver = True
         elif (self.carSimple2.position - self.bezierPoints[-1]).__len__() < 2:
-            winner = "Player two"
+            self.winner = "Player two"
             self.gameOver = True
         elif self.totalTime > 10:
-            winner = "the AI, you suck"
+            self.winner = "the AI, you suck"
             self.gameOver = True
-        if self.gameOver:
-            print("The game is over and the winner was ", winner, "! If you want to play again press the spacebar!")
+       
+    
+    def restartGame(self):
+        self.carAI = CarAI(3.0, 15.0, self.bezierPoints)
+        self.totalTime = 0.0
+        #playerone
+        self.carSimple1 = CarSimple(Vector(0,1.2,5))
+        #playertwo
+        self.carSimple2 = CarSimple(Vector(0,1.2,0))
+        self.white_background = False
+        self.messageNotPrinted = True
 
+        self.gameOver = False
+        self.winner = ''
 if __name__ == "__main__":
     GraphicsProgram3D().start()
