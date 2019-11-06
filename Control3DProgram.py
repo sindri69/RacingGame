@@ -47,8 +47,6 @@ class GraphicsProgram3D:
 
         #takes a while to load but its worth it
         self.tree = load_obj_file(sys.path[0] + "/models" , "birch_tree.obj")
-        #self.grass = load_obj_file(sys.path[0] + "/models" , "Grass.obj")
-       # self.test = load_obj_file(sys.path[0] + "/models" , "test2.obj")
         self.car_model = load_obj_file(sys.path[0] + "/models" , "shelby.obj")
         self.car_model2 = load_obj_file(sys.path[0] + "/models" , "shelby2.obj")
         self.car_model3 = load_obj_file(sys.path[0] + "/models" , "shelby3.obj")
@@ -73,7 +71,7 @@ class GraphicsProgram3D:
         self.left_key_down = False
         self.right_key_down = False
 
-        self.shader.set_light_position(Point(0.0, 50.0, 100.0))
+        self.shader.set_light_position(Point(0.0, 200.0, 300.0))
         self.shader.set_light_specular(0.1, 0.1, 0.1)
         self.shader.set_light_diffuse(1.0, 1.0, 1.0)
         self.shader.set_light_ambiance(0.1, 0.1, 0.1)
@@ -101,7 +99,7 @@ class GraphicsProgram3D:
         self.white_background = False
 
         self.gameOver = False
-        self.winner = ''
+        self.winner = 'x'
         self.messageNotPrinted = True
 
 
@@ -317,13 +315,13 @@ class GraphicsProgram3D:
         if self.gameOver and self.messageNotPrinted:
             print("The game is over and the winner was ", self.winner, "! If you want to play again press the spacebar!")
             self.messageNotPrinted = False
-        if (self.carSimple1.position - self.bezierPoints[-1]).__len__() < 2:
+        if (self.carSimple1.position - self.bezierPoints[-1]).__len__() < 3 and not self.gameOver:
             self.winner = "Player one"
             self.gameOver = True
-        elif (self.carSimple2.position - self.bezierPoints[-1]).__len__() < 2:
+        elif (self.carSimple2.position - self.bezierPoints[-1]).__len__() < 3 and not self.gameOver:
             self.winner = "Player two"
             self.gameOver = True
-        elif self.totalTime > 15:
+        elif self.totalTime > 15 and not self.gameOver:
             self.winner = "the AI, you suck"
             self.gameOver = True
        

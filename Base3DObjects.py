@@ -238,12 +238,7 @@ class TextureCube:
     def set_uv(self, shader):    
         shader.set_attribute_buffers_with_uv_cube(self.vertex_buffer_id)
     def draw(self):
-        # glDrawArrays(GL_TRIANGLE_FAN, 0, 4)
-        # glDrawArrays(GL_TRIANGLE_FAN, 4, 4)
         glDrawArrays(GL_TRIANGLE_FAN, 8, 4)
-        # glDrawArrays(GL_TRIANGLE_FAN, 12, 4)
-        # glDrawArrays(GL_TRIANGLE_FAN, 16, 4)
-        # glDrawArrays(GL_TRIANGLE_FAN, 20, 4)
         glBindBuffer(GL_ARRAY_BUFFER, 0)
 
 class Sphere:
@@ -300,13 +295,12 @@ class SkySphere:
                 vertex_array.append(sin(stack_angle + stack_interval) * cos(slice_angle))
                 vertex_array.append(cos(stack_angle + stack_interval))
                 vertex_array.append(sin(stack_angle + stack_interval) * sin(slice_angle))
-                #tók oll self fyrir framan vertex array af thvi kari gerir thad
 
-                #var slices_count / slices
+
+
                 vertex_array.append(slice_count / slices)
                 vertex_array.append((stack_count + 1) / stacks)
-                
-                ##rétt ad hafa self?
+
                 self.vertex_count += 2
         self.vertex_buffer_id = glGenBuffers(1)
         glBindBuffer(GL_ARRAY_BUFFER, self.vertex_buffer_id)
@@ -338,7 +332,6 @@ class Material:
 class MeshModel:
     def __init__(self):
         self.vertex_arrays = dict()
-        # self.index_arrays = dict()
         self.mesh_materials = dict()
         self.materials = dict()
         self.vertex_counts = dict()
