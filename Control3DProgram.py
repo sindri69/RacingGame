@@ -273,9 +273,9 @@ class GraphicsProgram3D:
             if self.carSimple2.carSpeed < self.carSimple2.maxSpeed:
                 self.carSimple2.carSpeed += 10 * delta_time
         if self.right_key_down:
-            self.carSimple2.steerAngle -= (pi / 5 )* delta_time
+            self.carSimple2.steerAngle -= (pi / 5 )* delta_time * 1/(self.carSimple2.carSpeed / 10) 
         if self.left_key_down:
-            self.carSimple2.steerAngle += (pi / 5 )* delta_time
+            self.carSimple2.steerAngle += (pi / 5 )* delta_time * 1/(self.carSimple2.carSpeed / 10) 
         if not self.left_key_down and not self.right_key_down:
             self.carSimple2.steerAngle = 0
         if self.down_key_down:
