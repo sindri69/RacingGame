@@ -111,35 +111,15 @@ class Shader3D:
         glVertexAttribPointer(self.normalLoc, 3, GL_FLOAT, False, 6 * sizeof(GLfloat), OpenGL.GLU.ctypes.c_void_p(3 * sizeof(GLfloat)))
 
 
-    # def set_light1_position(self, pos):
-    #       glUniform4f(self.light1PosLoc, pos.x, pos.y, pos.z, 1.0)
-    # def set_light1_direction(self, pos):
-    #       glUniform4f(self.light1DirLoc, pos.x, pos.y, pos.z, 1.0)
-    # def set_light1_diffuse(self, red, green, blue):
-    #     glUniform4f(self.light1DiffuseLoc, red, green, blue, 1.0)
-    # def set_light1_specular(self, red, green, blue):
-    #     glUniform4f(self.light1SpecLoc, red, green, blue, 1.0)
-    # def set_light1_ambiance(self, red, green, blue):
-    #     glUniform4f(self.light1AmbianceLoc, red, green, blue, 1.0)
-
-    # def set_light2_position(self, pos):
-    #       glUniform4f(self.light2PosLoc, pos.x, pos.y, pos.z, 1.0)
-    # def set_light2_direction(self, pos):
-    #       glUniform4f(self.light2DirLoc, pos.x, pos.y, pos.z, 1.0)
-    # def set_light2_diffuse(self, red, green, blue):
-    #     glUniform4f(self.light2DiffuseLoc, red, green, blue, 1.0)
-    # def set_light2_specular(self, red, green, blue):
-    #     glUniform4f(self.light2SpecLoc, red, green, blue, 1.0)
-    # def set_light2_ambiance(self, red, green, blue):
-    #     glUniform4f(self.light2AmbianceLoc, red, green, blue, 1.0)
-
     def set_position_attribute(self, vertex_array):
         glVertexAttribPointer(self.positionLoc, 3, GL_FLOAT, False, 0, vertex_array)
 
     def set_normal_attribute(self, vertex_array):
         glVertexAttribPointer(self.normalLoc, 3, GL_FLOAT, False, 0, vertex_array)
-    ## ADD CODE HERE ##
 
+
+
+## this class is used for all texture mapping, not just the skysphere
 class SkysphereShader:
     def __init__(self):
         vert_shader = glCreateShader(GL_VERTEX_SHADER)

@@ -1,6 +1,5 @@
 from OpenGL.GL import *
 from OpenGL.GLU import *
-from OpenGL.GLUT import * #for the skybox
 from math import *
 
 import pygame
@@ -46,6 +45,7 @@ class GraphicsProgram3D:
         self.cube.set_vertices(self.shader)
         self.textureCube = TextureCube()
 
+        #takes a while to load but its worth it
         self.tree = load_obj_file(sys.path[0] + "/models" , "birch_tree.obj")
         #self.grass = load_obj_file(sys.path[0] + "/models" , "Grass.obj")
        # self.test = load_obj_file(sys.path[0] + "/models" , "test2.obj")
@@ -54,7 +54,7 @@ class GraphicsProgram3D:
         self.car_model3 = load_obj_file(sys.path[0] + "/models" , "shelby3.obj")
         self.gate = load_obj_file(sys.path[0] + "/models" , "gate.obj")
 
-        #playsound("./sounds/oh_yeah.mp3", False)
+        playsound("./sounds/oh_yeah.mp3", False)
 
         self.clock = pygame.time.Clock()
         self.clock.tick()
@@ -66,7 +66,6 @@ class GraphicsProgram3D:
         self.s_key_down = False
         self.a_key_down = False
         self.d_key_down = False
-        self.LSHIFT_key_down = False
 
         #player two controls
         self.up_key_down = False
@@ -86,18 +85,19 @@ class GraphicsProgram3D:
 
         #could leave empty for less detail
         self.skysphere = SkySphere(256, 512)
+
         self.onRoad1 = False
         self.onRoad2 = False
         self.bezierPoints = [Point(0.0, 1.0, 0.0), Point(10.0, 1.0, 25.0), Point(10.0, 1.0, 50.0), Point(-10.0, 1.0, 100.0), Point(10.0, 1.0, 150.0), Point(-10.0, 1.0, 200.0), Point(10.0, 1.0, 250.0), Point(-10.0, 1.0, 300.0), Point(10.0, 1.0, 350.0), Point(-10.0, 1.0, 400.0)]
-        # bezierPoints2 = [Point(150.0, 1.0, 0.0), Point(50.0, 1.0, -100.0), Point(50.0, 1.0, -100.0), Point(0.0, 1.0, 0.0)]
         self.track = RaceTrack(10, self.bezierPoints, 30, 30, 60)
-        # self.track2 = RaceTrack(10, bezierPoints2)
         self.carAI = CarAI(3.0, 15.0, self.bezierPoints)
         self.totalTime = 0.0
+
         #playerone
         self.carSimple1 = CarSimple(Vector(-2,1.2,5))
         #playertwo
         self.carSimple2 = CarSimple(Vector(2,1.2,5))
+
         self.white_background = False
 
         self.gameOver = False
@@ -137,12 +137,11 @@ class GraphicsProgram3D:
         self.displaySkysphere()
 
         self.shader.use()
-        #self.cube.set_vertices(self.shaderself.shader)
         self.shader.set_view_matrix(self.view_matrix.get_matrix())
         self.shader.set_eye_position(self.view_matrix.eye)
         self.shader.set_light_ambiance(0.1, 0.1, 0.1)
 
-        #cube for now, will be a car later
+
         drawCar1(self)
         drawCar2(self)
         drawCarAI(self)
@@ -164,12 +163,9 @@ class GraphicsProgram3D:
         self.displaySkysphere()
         
         self.shader.use()
-        #self.cube.set_vertices(self.shaderself.shader)
         self.shader.set_view_matrix(self.view_matrix.get_matrix())
         self.shader.set_eye_position(self.view_matrix.eye)
         self.shader.set_light_ambiance(0.1, 0.1, 0.1)
-
-        #cube for now, will be a car later
         
         drawCar2(self)
         drawCar1(self)
@@ -179,10 +175,6 @@ class GraphicsProgram3D:
         drawTrack(self, self.track)
         drawGates(self)
         drawGrass(self, self.carSimple1)
-
-        #drawfloor(self)
-
-
 
         #important to only call flip() once, even though there are two viewports
         pygame.display.flip()
@@ -206,8 +198,6 @@ class GraphicsProgram3D:
                         self.a_key_down = True
                     elif event.key == K_d:
                         self.d_key_down = True
-                    elif event.key == K_LSHIFT:
-                        self.LSHIFT_key_down = True
                     elif event.key == K_UP:
                         self.up_key_down = True
                     elif event.key == K_DOWN:
@@ -229,8 +219,6 @@ class GraphicsProgram3D:
                         self.a_key_down = False
                     elif event.key == K_d:
                         self.d_key_down = False
-                    elif event.key == K_LSHIFT:
-                        self.LSHIFT_key_down = False
                     elif event.key == K_UP:
                         self.up_key_down = False
                     elif event.key == K_DOWN:
@@ -276,9 +264,11 @@ class GraphicsProgram3D:
             if self.carSimple1.carSpeed > self.carSimple1.maxBackSpeed:
                 self.carSimple1.carSpeed -= 10 * delta_time
         self.carSimple1.steerAngle = max(-self.carSimple1.maxSteerAngle, min(self.carSimple1.steerAngle, self.carSimple1.maxSteerAngle))
+        #slow down if not on the road
         if not self.onRoad1 and self.carSimple1.carSpeed >= 20:
             self.carSimple1.carSpeed -= 50 * delta_time
-            print(self.carSimple1.carSpeed)
+        
+
     def carSimpleMove2(self, delta_time): 
         #playertwo
         if self.up_key_down:
@@ -293,6 +283,7 @@ class GraphicsProgram3D:
         if self.down_key_down:
             if self.carSimple2.carSpeed > self.carSimple2.maxBackSpeed:
                 self.carSimple2.carSpeed -= 10 * delta_time
+        #slow down if not on the road
         if not self.onRoad2 and self.carSimple2.carSpeed >= 20:
             self.carSimple2.carSpeed -= 20 * delta_time
       
@@ -307,7 +298,6 @@ class GraphicsProgram3D:
         glActiveTexture(GL_TEXTURE0)
         glBindTexture(GL_TEXTURE_2D, self.texture_id_skysphere)
         self.skysphere_shader.set_diffuse_tex(0)
-        #self.skysphere_shader.set_alpha_tex(None)
 
         self.skysphere_shader.set_opacity(1.0)
 
@@ -333,7 +323,7 @@ class GraphicsProgram3D:
         elif (self.carSimple2.position - self.bezierPoints[-1]).__len__() < 2:
             self.winner = "Player two"
             self.gameOver = True
-        elif self.totalTime > 10:
+        elif self.totalTime > 15:
             self.winner = "the AI, you suck"
             self.gameOver = True
        

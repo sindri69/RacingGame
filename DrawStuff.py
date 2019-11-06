@@ -40,6 +40,7 @@ def drawTree(control):
     control.model_matrix.pop_matrix()
 
 def drawGrass(control, carsimple):
+    ## follows each player around, giving the illusion of grass everywhere
     control.skysphere_shader.use()
     glActiveTexture(GL_TEXTURE0)
     glBindTexture(GL_TEXTURE_2D, control.texture_id_grass)                 
@@ -59,21 +60,12 @@ def drawGates(control):
     for gate in control.track.gateArr:
         control.model_matrix.push_matrix()
         control.model_matrix.add_translation(gate[0].x,gate[0].y, gate[0].z)
-        # control.model_matrix.add_rotateZ(pi)
         control.model_matrix.add_scale(5.0, 3.0, 5.0)
         control.model_matrix.add_rotateX(pi)
         control.model_matrix.add_rotateY(gate[1] - pi/2)
         control.shader.set_model_matrix(control.model_matrix.matrix)
         control.gate.draw(control.shader)
         control.model_matrix.pop_matrix() 
-
-def drawLambo(control):
-    control.model_matrix.push_matrix()
-    control.model_matrix.add_scale(2.0, 2.0, 2.0)
-    control.model_matrix.add_translation(2, 1.0, 3.0)
-    control.shader.set_model_matrix(control.model_matrix.matrix)
-    control.lambo.draw(control.shader)
-    control.model_matrix.pop_matrix()    
 
 def drawForrest(control):
     for tree in control.track.treeArr:
@@ -98,7 +90,6 @@ def drawfloor(control):
 def drawTrack(control, racetrack):
     control.model_matrix.push_matrix()
     control.model_matrix.add_translation(0.0, -0.2, 0.0)
-    # control.model_matrix.add_scale(40.0, 0.2, 40.0)
     control.shader.set_model_matrix(control.model_matrix.matrix)
     control.shader.set_material_diffuse(Color(0.9,0.9,0.9))
     control.shader.set_material_shininess(2)
