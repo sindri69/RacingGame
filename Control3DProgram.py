@@ -86,7 +86,7 @@ class GraphicsProgram3D:
 
         self.onRoad1 = False
         self.onRoad2 = False
-        self.bezierPoints = [Point(0.0, 1.0, 0.0), Point(10.0, 1.0, 25.0), Point(10.0, 1.0, 50.0), Point(-10.0, 1.0, 100.0), Point(10.0, 1.0, 150.0), Point(-10.0, 1.0, 200.0), Point(10.0, 1.0, 250.0), Point(-10.0, 1.0, 300.0), Point(10.0, 1.0, 350.0), Point(-10.0, 1.0, 400.0)]
+        self.bezierPoints = [Point(0.0, 1.0, 0.0), Point(10.0, 1.0, 25.0), Point(10.0, 1.0, 50.0), Point(-10.0, 1.0, 100.0), Point(20.0, 1.0, 150.0), Point(-20.0, 1.0, 200.0), Point(30.0, 1.0, 250.0), Point(-30.0, 1.0, 300.0), Point(40.0, 1.0, 350.0), Point(-50.0, 1.0, 400.0)]
         self.track = RaceTrack(10, self.bezierPoints, 30, 30, 60)
         self.carAI = CarAI(3.0, 15.0, self.bezierPoints)
         self.totalTime = 0.0
@@ -253,9 +253,9 @@ class GraphicsProgram3D:
             if self.carSimple1.carSpeed < self.carSimple1.maxSpeed:
                 self.carSimple1.carSpeed += 10 * delta_time
         if self.d_key_down:
-            self.carSimple1.steerAngle -= (pi / 5 )* delta_time
+            self.carSimple1.steerAngle -= (pi / 5 )* delta_time * 1/(self.carSimple1.carSpeed / 10) 
         if self.a_key_down:
-            self.carSimple1.steerAngle += (pi / 5 )* delta_time
+            self.carSimple1.steerAngle += (pi / 5 )* delta_time * 1/(1 + self.carSimple1.carSpeed / 10)
         if not self.a_key_down and not self.d_key_down:
             self.carSimple1.steerAngle = 0
         if self.s_key_down:
